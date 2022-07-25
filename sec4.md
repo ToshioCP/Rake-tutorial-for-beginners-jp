@@ -24,7 +24,7 @@ Pandocは、文書の形式を変換するアプリケーションです。
 例として`example.docx`というワードファイルをHTMLにしてみましょう。
 ワードファイルはこんな感じです。
 
-![ワード画面](../image/word.png){width=80vw}
+![ワード画面](word.png)
 
 ~~~
 $ pandoc -so example.html example.docx
@@ -33,7 +33,7 @@ $ pandoc -so example.html example.docx
 これにより、`example.html`というファイルができます。
 ダブルクリックするとブラウザで内容が表示されます。
 
-![ブラウザ画面](../image/html.png){width=80%}
+![ブラウザ画面](html.png){width=80%}
 
 画面の見栄えはともかく、ワードで書いた内容がHTMLとして表示されていることが確認できるでしょう。
 
