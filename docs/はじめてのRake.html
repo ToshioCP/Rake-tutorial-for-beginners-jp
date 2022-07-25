@@ -687,19 +687,13 @@ $</code></pre>
 </ul>
 <p>これ以外にも多数の文書形式がサポートされています。 詳しくは<a href="https://pandoc.org/">Pandocのウェブサイト</a>をご覧ください。</p>
 <p>例として<code>example.docx</code>というワードファイルをHTMLにしてみましょう。 ワードファイルはこんな感じです。</p>
-<figure class="figure-image figure-image-fotolife" title="example.docx">
-[f:id:ToshioCP:20220725174426p:plain]
-<figcaption>
-example.docx
-</figcaption>
+<figure>
+<img src="../image/word.png" alt="" /><figcaption>ワード画面</figcaption>
 </figure>
 <pre><code>$ pandoc -so example.html example.docx</code></pre>
 <p>これにより、<code>example.html</code>というファイルができます。 ダブルクリックするとブラウザで内容が表示されます。</p>
-<figure class="figure-image figure-image-fotolife" title="example.html">
-[f:id:ToshioCP:20220725174526p:plain]
-<figcaption>
-example.html
-</figcaption>
+<figure>
+<img src="../image/html.png" style="width:80.0%" alt="" /><figcaption>ブラウザ画面</figcaption>
 </figure>
 <p>画面の見栄えはともかく、ワードで書いた内容がHTMLとして表示されていることが確認できるでしょう。</p>
 <p>では、どのようなHTMLが生成されたのでしょうか。</p>
