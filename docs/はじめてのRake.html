@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="author" content="ToshioCP" />
+  <title>はじめてのRake</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">はじめてのRake</h1>
+<p class="author">ToshioCP</p>
+<p class="date">2022/7/25</p>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#はじめてのrake１">はじめてのRake（１）</a></li>
+<li><a href="#はじめてのrake２">はじめてのRake（２）</a></li>
+<li><a href="#はじめてのrake３">はじめてのRake（３）</a></li>
+<li><a href="#はじめてのrake４">はじめてのRake（４）</a></li>
+</ul>
+</nav>
+<h3 id="はじめてのrake１">はじめてのRake（１）</h3>
+<p>Rakeの初歩について書こうと思います。 1回のブログでは難しいので、4回シリーズで書きます。 その内容はそれぞれ、タスク、ファイルタスク（前半）、ファイルタスク（後半）、応用例です。</p>
+<p>文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。 上級とは、ほぼ「クラスを記述できるレベル」を指します。 上級以外の方はこの部分を飛ばしてください。</p>
+<h4 id="rakeのインストール">Rakeのインストール</h4>
+<p>RakeはRubyのアプリケーションです。 Rubyのインストールについては<a href="https://www.ruby-lang.org/ja/documentation/installation/#package-management-systems">Rubyの公式ホームページ</a>を参考にしてください。 Rakeは「Rubyの標準添付ライブラリ」なので、インストールされたRubyの中に含まれることが多いですが、もしそうでないときは、</p>
+<ul>
+<li>Linuxディストリビューションのrubyパッケージをインストールした場合＝＞パッケージのrakeをインストール</li>
+<li>別の方法でインストールした場合＝＞コマンドから「gem install rake」でインストール</li>
+</ul>
+<p>などの方法でインストールしてください。</p>
+<h4 id="rakeとは">Rakeとは？</h4>
+<p>Rakeは、Makeと同様の機能を、Rubyプログラムとして実装したアプリケーションです。</p>
+<p>Makeは、Cでコンパイルするときに、コンパイル過程全体をコントロールするプログラムです。 しかし、MakeはC専用ではなく、いろいろなコンパイラやトランスレータ（ある形式から別の形式に変換するプログラム）を制御することができます。 便利なMakeですが、その文法はマニアックです。 初歩的な使い方をしているうちは、分かりやすいのですが、使えば使うほど分かりにくくなっていきます。 例えばこんな感じです。</p>
+<pre><code>application: $(OBJS)
+    $(CC) -o $(@F) $(OBJS) $(LIBS)
+
+$(OBJS): %.o: %.c $(HEADER)
+    $(CC) -fPIC -c -o $(@F) $(CFLAGS) $&lt;</code></pre>
+<p>それに対してRakeは</p>
+<ul>
+<li>Rubyの文法をそのまま使うことができる</li>
+<li>したがって、分かりやすく柔軟な書き方ができる</li>
+</ul>
+<p>という利点があります。</p>
+<h4 id="rakeの基本">Rakeの基本</h4>
+<p>まず、コマンドの<code>rake</code>とカレントディレクトリに置く<code>Rakefile</code>というファイルがポイントになります。 rakeコマンドは引数にタスク名（タスクは後で説明します）をとり、</p>
+<pre><code>$ rake hello</code></pre>
+<p>の形で使います。 この例では、引数<code>hello</code>はタスク名です。</p>
+<p>このとき<code>rake</code>は次のことを順に実行します。</p>
+<ul>
+<li>Rakefileをロード、実行する（Rakefileにはタスクの定義が書かれている）。</li>
+<li>コマンドライン引数で指定されたタスクを呼び出す（実行する）</li>
+</ul>
+<p>「Rakefileにタスクの定義を書く」ことが、rakeを使う際のポイントになります。 当然、コマンドラインから呼び出されるタスクはRakefileの中で定義されていなければなりません。</p>
+<blockquote>
+<p>[R]　「タスクの定義を書く」「タスクを定義する」などは、<a href="https://docs.ruby-lang.org/ja/3.0/library/rake.html">Rubyのドキュメント</a>で使われている言い回しです。 Rubyに熟練している人は、これが具体的に何を意味するか気になるかもしれません。 Ruby的には「Taskクラスのインスタンスを生成する」ことを意味します。</p>
+</blockquote>
+<h4 id="rakefileでのタスク定義">Rakefileでのタスク定義</h4>
+<p>タスクはオブジェクトで、名前、事前タスク（前提条件）、アクションを持ってます。 それでは、まず名前だけを持っているタスクを作成してみましょう。 Rakefileに次のように書き込みます。</p>
+<pre><code>task :simple_task</code></pre>
+<p><code>task</code>はタスクを定義するためのコマンド（命令）だと考えてください。 一般に「コマンド」はプログラム言語において、コンピュータに何かをさせるためのものです。 例えば、Shellでは、「cd」はカレント・ディレクトリを移動する「コマンド」です。 「cd /var」では、コマンド「cd」には引数「/var」が与えられています。 「cd /var」によって、カレントディレクトリが「/var」に移動します。</p>
+<p>同様に「task」コマンドには引数「:simple_task」が与えられています。 これによって、simple_taskを名前とするタスクが作成されます。 なお、引数の<code>:simple_task</code>はシンボルですが、文字列を使っても構いません。</p>
+<pre><code>task &quot;simple_task&quot;</code></pre>
+<p>両者に対してtaskコマンドが行う動作は全く同じです。</p>
+<p>実は、taskコマンドは、Rubyの文法から見ると、taskメソッドの呼び出しで、<code>:simple_task</code>はtaskメソッドへの引数です。 ですので、今後はtaskを「コマンド」あるいは「メソッド」ということがありますが、</p>
+<ul>
+<li>「コマンド」は、taskの「タスク作成」機能に注目している場合</li>
+<li>「メソッド」は、Rubyの文法上の機能に注目している場合</li>
+</ul>
+<p>で使い分けをしています。 細かいことになるので、あまり気にしなくても構いません。</p>
+<blockquote>
+<p>[R]　Rubyの文法から見た場合、<code>task</code>コマンドは「メソッド呼び出し」で、<code>:simple_task</code>はtaskメソッドの引数です。 Rubyではメソッド呼び出しの引数にカッコを付けても付けなくても良いのでこのように書けるのです。 もしカッコを付けるのならば、</p>
+<pre><code>task(&quot;simple_task&quot;)</code></pre>
+<p>となります。 （taskとカッコの間にはスペースを入れない）。 どちらでも定義できますが、カッコ無しを用いるのが良いです。</p>
+<p>「タスクを定義する」とは「Taskクラスのインスタンスを生成する」ことです。 インスタンスの生成には通常newメソッドが使われますが、それ以外の方法もあります。 taskメソッドでは、その実行の中で「Task.new」が呼び出され、タスクのインスタンスが生成される仕組みになっています。</p>
+</blockquote>
+<p>タスク「simple_task」には事前タスクとアクションは定義されていません。</p>
+<p>コマンドラインからタスクを実行してみましょう。</p>
+<pre><code>$ rake simple_task</code></pre>
+<p>タスクは呼び出されているのですが、アクションが無いため、見た目には何も起こりません。 タスクが定義できているかどうかは、次のようにするとわかります。</p>
+<pre><code>$ rake -AT
+rake simple_task  #</code></pre>
+<p>オプションATは登録されているすべてのタスクを表示します。 これで、simple_taskが定義されていることがわかりました。</p>
+<h4 id="アクション">アクション</h4>
+<p>アクションは、taskメソッド呼び出しのブロックで表します。</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>task <span class="st">:hello</span> <span class="kw">do</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>  print <span class="st">&quot;Hello world!\n&quot;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>このタスクは<code>hello</code>という名前です。 事前タスクはなく、アクションは「Hello world!」と画面表示するというものです。 では、このタスクを実行してみましょう。</p>
+<pre><code>$ rake hello
+Hello world!</code></pre>
+<p>タスクhelloが呼び出され、そのアクションが実行されて「Hello world!」の文字列が表示されました。</p>
+<blockquote>
+<p>[R]　Rubyにはブロックを（１）波カッコ（<code>{</code>と<code>}</code>）で表す（２）<code>do</code>と<code>end</code>で表す、の2つの方法があります。 Rakefileではどちらも動作しますが、読みやすさの点から<code>do</code>と<code>end</code>を使うのが良いでしょう。 また、波カッコを使う場合、次のように書くと動作しません。</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a>task <span class="st">:hello</span> {print <span class="st">&quot;Hello world!\n&quot;</span>}</span></code></pre></div>
+<p>これは、do-endより波カッコの方が強く結合するために起こるエラーです。 <a href="https://docs.ruby-lang.org/ja/3.0/doc/spec=2fcall.html#block">Rubyのドキュメント</a>が参考になるので見てください。 これを解消するには、引数にカッコをつけます。</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a>task(<span class="st">:hello</span>) {print <span class="st">&quot;Hello world!\n&quot;</span>}</span></code></pre></div>
+<p>Rakeでは、taskが「あたかもコマンドであるかのように表現したい」ということがあります。 波カッコを使うとそれができませんから、動作はするけれども推奨はできないのです。</p>
+<p>RakeはRuby文法の自由さ（引数のカッコを省略できるなど）を使って、taskなどのコマンドを提供しています。 このように、特定の分野のために作られたコマンドをもつ言語を「DSL（Domain-Specific Language）」といいます。 do-end推奨の背景にはDSLの考え方があります。</p>
+</blockquote>
+<h4 id="事前タスク">事前タスク</h4>
+<p>あるタスクが事前タスクを持っている場合、そのタスクが呼び出され（実行され）る前に事前タスクを呼び出します。</p>
+<p>タスクの定義は</p>
+<pre><code>task タスク名 =&gt; 事前タスク（の配列）do
+  アクション
+end</code></pre>
+<p>のようになります。</p>
+<p>「タスク名=&gt;事前タスク（の配列）」のところは、Rubyのハッシュです。 メソッド呼出の末尾にハッシュを渡す場合は カッコ（<code>{</code>と<code>}</code>） を省略することができます。 省略しなければ「{タスク名 =&gt; 事前タスク（の配列）}」となりますが、これでも動作します。</p>
+<p>また、タスク名がシンボルの場合、例えば「:abc =&gt; “def”」と書くのを「abc: “def”」と書くことができます。 同様に、「:abc =&gt; :def」と「abc: :def」は同じです。</p>
+<p>次の例では、firstとsecondという2つのタスクがあり、firstがsecondの事前タスクになっています。</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true"></a>task <span class="st">second: :first</span> <span class="kw">do</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true"></a>  print <span class="st">&quot;Second.\n&quot;</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true"></a>task <span class="st">:first</span> <span class="kw">do</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true"></a>  print <span class="st">&quot;First.\n&quot;</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>タスクsecondを呼び出すと、事前タスクであるfirstがその前に呼び出されます。</p>
+<pre><code>firstを実行　＝＞　secondを実行</code></pre>
+<p>という順になります。</p>
+<pre><code>$ rake second
+First.
+Second.</code></pre>
+<h4 id="rakefileの例">Rakefileの例</h4>
+<p>歌川さんの<a href="https://blog.utgw.net/entry/2022/06/22/221311">味玉のレシピをMakefileで記述する</a>が面白かったので、そのRake版を作ってみました。</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true"></a><span class="co"># 味玉をつくる</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true"></a>task :お湯を湧かす <span class="kw">do</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true"></a>  print <span class="st">&quot;お湯を湧かします\n&quot;</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true"></a>task 卵を茹でる: :お湯を湧かす <span class="kw">do</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true"></a>  print <span class="st">&quot;卵を茹でます\n&quot;</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true"></a>task :<span class="st">&#39;8分待つ&#39;</span> =&gt; :卵を茹でる <span class="kw">do</span></span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true"></a>  print <span class="st">&quot;8分待ちます\n&quot;</span></span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true"></a></span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true"></a>task ボウルに氷を入れる: :<span class="st">&#39;8分待つ&#39;</span> <span class="kw">do</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true"></a>  print <span class="st">&quot;ボウルに氷を入れます\n&quot;</span></span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true"></a></span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true"></a>task ボウルに水を入れる: :ボウルに氷を入れる <span class="kw">do</span></span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true"></a>  print <span class="st">&quot;ボウルに水を入れます\n&quot;</span></span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true"></a></span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true"></a>task ボウルに卵を入れる: :ボウルに水を入れる <span class="kw">do</span></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true"></a>  print <span class="st">&quot;ボウルに卵を入れます\n&quot;</span></span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true"></a></span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true"></a>task 卵の殻を剥く: :ボウルに卵を入れる <span class="kw">do</span></span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true"></a>  print <span class="st">&quot;卵の殻を剥きます\n&quot;</span></span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-30"><a href="#cb16-30" aria-hidden="true"></a></span>
+<span id="cb16-31"><a href="#cb16-31" aria-hidden="true"></a>task :ジップロックに日付を書く <span class="kw">do</span></span>
+<span id="cb16-32"><a href="#cb16-32" aria-hidden="true"></a>  print <span class="st">&quot;ジップロックに日付を書きます\n&quot;</span></span>
+<span id="cb16-33"><a href="#cb16-33" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-34"><a href="#cb16-34" aria-hidden="true"></a></span>
+<span id="cb16-35"><a href="#cb16-35" aria-hidden="true"></a>task ジップロックにめんつゆを入れる: [:ジップロックに日付を書く, :卵の殻を剥く] <span class="kw">do</span></span>
+<span id="cb16-36"><a href="#cb16-36" aria-hidden="true"></a>  print <span class="st">&quot;ジップロックにめんつゆを入れます\n&quot;</span></span>
+<span id="cb16-37"><a href="#cb16-37" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-38"><a href="#cb16-38" aria-hidden="true"></a></span>
+<span id="cb16-39"><a href="#cb16-39" aria-hidden="true"></a>task ジップロックに卵を入れる: :ジップロックにめんつゆを入れる <span class="kw">do</span></span>
+<span id="cb16-40"><a href="#cb16-40" aria-hidden="true"></a>  print <span class="st">&quot;ジップロックに卵を入れます\n&quot;</span></span>
+<span id="cb16-41"><a href="#cb16-41" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-42"><a href="#cb16-42" aria-hidden="true"></a></span>
+<span id="cb16-43"><a href="#cb16-43" aria-hidden="true"></a>task 一晩寝かせる: :ジップロックに卵を入れる <span class="kw">do</span></span>
+<span id="cb16-44"><a href="#cb16-44" aria-hidden="true"></a>  print <span class="st">&quot;一晩寝かせます\n&quot;</span></span>
+<span id="cb16-45"><a href="#cb16-45" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb16-46"><a href="#cb16-46" aria-hidden="true"></a></span>
+<span id="cb16-47"><a href="#cb16-47" aria-hidden="true"></a>task 味玉: :一晩寝かせる <span class="kw">do</span></span>
+<span id="cb16-48"><a href="#cb16-48" aria-hidden="true"></a>  print <span class="st">&quot;味玉ができました\n&quot;</span></span>
+<span id="cb16-49"><a href="#cb16-49" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rake 味玉
+ジップロックに日付を書きます
+お湯を湧かします
+卵を茹でます
+8分待ちます
+ボウルに氷を入れます
+ボウルに水を入れます
+ボウルに卵を入れます
+卵の殻を剥きます
+ジップロックにめんつゆを入れます
+ジップロックに卵を入れます
+一晩寝かせます
+味玉ができました</code></pre>
+<h4 id="タスクの呼び出しは一度だけ">タスクの呼び出しは一度だけ</h4>
+<p>すでに呼び出されたタスクは実行されません。 つまり「タスクの実行は1度だけ」です。</p>
+<p>例えば、味玉のRakefileで</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true"></a>task ジップロックに卵を入れる: :ジップロックにめんつゆを入れる <span class="kw">do</span></span></code></pre></div>
+<p>のところを</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true"></a>task ジップロックに卵を入れる: [:ジップロックにめんつゆを入れる, :卵の殻を剥く] <span class="kw">do</span></span></code></pre></div>
+<p>とすると、「卵の殻を剥く」が2箇所で事前タスクになります。 呼び出しが2回ありますが、実行は1回だけなので、実行結果は同じになります。</p>
+<blockquote>
+<p>[R]　タスクのインスタンス・メソッドに「invoke」（呼び出し）と「execute」（実行）があります。 invokeはアクションを一度だけ実行しますが、executeはそのメソッドが呼ばれた回数だけ何度でも実行します。 それで、<a href="https://docs.ruby-lang.org/ja/3.0/library/rake.html">Rubyのドキュメント</a>では「呼び出し」と「実行」の2つの言葉を区別して使っているようです。 このブログでは使い分けが曖昧な箇所がありますが、大きな混乱はないと思っています。 なお、invokeは自身のタスクを呼び出す前に事前タスクを呼び出しますが、executeは事前タスクを呼び出しません。</p>
+</blockquote>
+<h4 id="タスク名には文字列も使える">タスク名には文字列も使える</h4>
+<p>今までタスク名にシンボルを使ってきましたが、文字列を使うこともできます。</p>
+<pre><code>task &quot;simple_task&quot;
+task &quot;second&quot; =&gt; &quot;first&quot;</code></pre>
+<p>このような書き方も可能です。 シンボルでハッシュを記述するには「{abc: :def}」のような書き方ができますが、シンボルの最初に数字がくるときにはこれが使えません。 「{0abc: :def}」や「{abc: :2def}」はシンタックス・エラーになります。 「{:‘0abc’ =&gt; :def}」「{abc: :‘2def’}」のように書かなければなりません。 文字列では、このような心配がなくシングルあるいはダブルクォートで囲めばエラーにはなりません。</p>
+<p>慣例としては</p>
+<pre><code>task abc: %w[def ghi]</code></pre>
+<p>の書き方が多く用いられるようです。 %wは空白で区切られた文字列の配列を返します。 <code>%w[def ghi]</code>と<code>["def", "ghi"]</code>は同じです。 Rubyのドキュメントの<a href="https://docs.ruby-lang.org/ja/3.0/doc/spec=2fliteral.html#percent">%記法</a>を参考にしてください。</p>
+<p>味玉の例で%記法を使うと</p>
+<pre><code>task ジップロックにめんつゆを入れる: %w[ジップロックに日付を書く 卵の殻を剥く] do</code></pre>
+<p>となります。</p>
+<h3 id="はじめてのrake２">はじめてのRake（２）</h3>
+<p>「はじめてのRake」の第2回です。 今回はファイルタスクの説明（前半）です。 ファイルタスクはRakeにおいて最も重要なタスクです。 ファイルタスクのためにRakeがあると言っても過言ではありません。</p>
+<p>はじめてこのブログを見る方は「<a href="https://toshiocp.com/entry/2022/07/22/112021">はじめてのRake（１）</a>」からご覧になってください。</p>
+<p>文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。 上級とは、ほぼ「クラスを記述できるレベル」を指します。 上級以外の方はこの部分を飛ばしてください。</p>
+<h4 id="ファイルタスクとは">ファイルタスクとは？</h4>
+<p>ファイルタスクはタスクの一種です。 ファイルタスクにも一般のタスクと同じように「名前」「事前タスク」「アクション」があります。 一般のタスクとの違いは次の3点です。</p>
+<ul>
+<li>ファイルタスクの「名前」は（ファイルの）パスを表す</li>
+<li>ファイルタスクはそのアクションを実行するかどうかについての条件がある</li>
+<li>ファイルタスクはfileメソッドで定義する（一般のタスクはtaskメソッド）。</li>
+</ul>
+<p>これ以外は一般のタスクと同じで、「タスクの呼び出しの前に事前タスクを呼び出す」「タスクの実行は一度だけ」です。</p>
+<p>それでは、ファイルタスクのアクションを実行する上での条件とは何でしょうか。 条件は2つあります。</p>
+<ul>
+<li>タスクの名前が示すファイルが存在しない</li>
+<li>タスクの名前が示すファイルのmtime（ファイル内容変更時間）が、その事前タスク（複数ある場合はそのどれか）のmtimeよりも古い。 ただし、事前タスクがファイルタスクではない場合（一般のタスクである場合）はmtimeの代わりに現在時刻を用いる。 したがって、事前タスクが一般のタスクを含む場合は、そのファイルタスクは常に実行される。</li>
+</ul>
+<h4 id="ファイルのバックアップ">ファイルのバックアップ</h4>
+<p>それでは具体例を見ていきましょう。 ここではテキストファイル「a.txt」のバックアップファイル「a.bak」を作ることを考えます。 単純にファイルをコピーすれば良いので、</p>
+<pre><code>$ cp a.txt a.bak</code></pre>
+<p>で出来ますが、練習のためにRakefileにしてみます。</p>
+<div class="sourceCode" id="cb24"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true"></a>file <span class="st">&quot;a.bak&quot;</span> =&gt; <span class="st">&quot;a.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true"></a>  cp <span class="st">&quot;a.txt&quot;</span>, <span class="st">&quot;a.bak&quot;</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>このRakefileの内容を説明します。</p>
+<ul>
+<li>fileメソッドでファイルタスク「a.bak」を定義しています</li>
+<li>a.bakの事前タスクは「a.txt」になります。 Rakefileには事前タスク「a.txt」の定義は書かれていません。 このタスク「a.txt」は、タスク「a.bak」の呼び出しにおいて、それに先立って事前タスク「a.txt」が呼び出される直前にRakeの中で生成されます。 「a.txt」のように、この時点でファイルが存在する場合は、名前のみのタスク（事前タスクとアクションは無い）として定義されます。 もしもこの時点でファイルが存在しなければエラーになります。</li>
+<li>タスク「a.bak」のアクションは<code>cp "a.txt", "a.bak"</code>です。 cpメソッドは、FileUtilsモジュールで定義されていて、第1引数ファイルを第2引数ファイルにコピーします。 このモジュールはRubyの標準添付ライブラリですが、ビルトインではないため、通常は<code>require 'fileutils'</code>をプログラムに書かなければなりません。 しかし、Rakeでは自動的にrequireするので、Rakefileにそれを書く必要はありません。</li>
+</ul>
+<p>それでは、コマンドラインから実行してみましょう。</p>
+<pre><code>$ ls
+Rakefile  a.txt
+$ rake a.bak
+cp a.txt a.bak
+$ ls
+Rakefile  a.bak  a.txt
+$ diff a.bak a.txt
+$ rake a.bak
+$</code></pre>
+<ul>
+<li>最初はカレントディレクトリには「Rakefile」と「a.txt」の2つのファイルだけがあります。</li>
+<li>rakeを実行すると、「a.txt」が「a.bak」にコピーされます。</li>
+<li>ディレクトリをリスティングすると、「a.bak」が新たに加わっています。</li>
+<li>diffを使って「a.bak」と「a.txt」を比較すると、同じ内容のファイルなので、何もメッセージが出ません</li>
+<li>再びrakeを実行しますが、「a.bak」が「a.txt」より後に作成されているため、アクションは実行されません</li>
+</ul>
+<p>ここでは、最も基本的なファイルタスクの使い方を学びました。</p>
+<h4 id="複数ファイルのバックアップ">複数ファイルのバックアップ</h4>
+<p>次に3つのファイルをバックアップするRakefileについて考えてみましょう。 新たに「b.txt」と「c.txt」というファイルを作っておきます。 Rakefileのもっとも初歩的な書き方は、次のようなものでしょう。</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true"></a>file <span class="st">&quot;a.bak&quot;</span> =&gt; <span class="st">&quot;a.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true"></a>  cp <span class="st">&quot;a.txt&quot;</span>, <span class="st">&quot;a.bak&quot;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true"></a>file <span class="st">&quot;b.bak&quot;</span> =&gt; <span class="st">&quot;b.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true"></a>  cp <span class="st">&quot;b.txt&quot;</span>, <span class="st">&quot;b.bak&quot;</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true"></a></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true"></a>file <span class="st">&quot;c.bak&quot;</span> =&gt; <span class="st">&quot;c.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true"></a>  cp <span class="st">&quot;c.txt&quot;</span>, <span class="st">&quot;c.bak&quot;</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>ここには、3つのファイルタスクが定義されています。 それを実行してみましょう。 あらかじめ、「a.bak」は削除しておきます。</p>
+<pre><code>$ ls
+Rakefile  a.txt  b.txt  c.txt
+$ rake a.bak
+cp a.txt a.bak
+$ rake b.bak
+cp b.txt b.bak
+$ rake c.bak
+cp c.txt c.bak
+$ ls
+Rakefile  a.bak  a.txt  b.bak  b.txt  c.bak  c.txt</code></pre>
+<p>皆さん既に気がついたことと思います。 「自分だったらこんなことしない。rakeを使ってもcpを3回使うのと変わらないじゃないか」。 その通りです。</p>
+<p>一度のRake実行で3個のファイルをコピーしたいですね。 これは、一般のタスクと3つのファイルタスクを関連付けることで実現できます。 最初に「copy」タスクを作り、3つのファイルタスクをその事前タスクにしてみましょう。</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true"></a>task <span class="st">copy: </span><span class="ot">%w[</span><span class="st">a.bak b.bak c.bak</span><span class="ot">]</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true"></a>file <span class="st">&quot;a.bak&quot;</span> =&gt; <span class="st">&quot;a.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true"></a>  cp <span class="st">&quot;a.txt&quot;</span>, <span class="st">&quot;a.bak&quot;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true"></a></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true"></a>file <span class="st">&quot;b.bak&quot;</span> =&gt; <span class="st">&quot;b.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true"></a>  cp <span class="st">&quot;b.txt&quot;</span>, <span class="st">&quot;b.bak&quot;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true"></a>file <span class="st">&quot;c.bak&quot;</span> =&gt; <span class="st">&quot;c.txt&quot;</span> <span class="kw">do</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true"></a>  cp <span class="st">&quot;c.txt&quot;</span>, <span class="st">&quot;c.bak&quot;</span></span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rm *.bak
+$ rake copy
+cp a.txt a.bak
+cp b.txt b.bak
+cp c.txt c.bak</code></pre>
+<p>最初に、バックアップファイルを削除するのを忘れないでください。 一度のrake実行で3つのコピーができました。</p>
+<p>リファクタリングしましょう。 2つのことを改善します。</p>
+<ul>
+<li>トップレベルのタスクを「copy」から「default」に変えます。 「default」はrakeの引数が省略されたときに実行されるデフォルトのタスクです。</li>
+<li>3つのファイルタスクをRubyのイテレーションを使って1つにまとめます。</li>
+</ul>
+<div class="sourceCode" id="cb30"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true"></a>backup_files =<span class="ot"> %w[</span><span class="st">a.bak b.bak c.bak</span><span class="ot">]</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true"></a>task <span class="st">default: </span>backup_files</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true"></a></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true"></a>backup_files.each <span class="kw">do</span> |backup|</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true"></a>  source = backup.ext(<span class="st">&quot;.txt&quot;</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true"></a>  file backup =&gt; source <span class="kw">do</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true"></a>    cp source, backup</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<ul>
+<li>はじめに、バックアップ・ファイルの配列を作り、「backup_files」という変数に代入しておきます。</li>
+<li>トップレベルのタスクを「default」にします。</li>
+<li>バックアップファイルの配列の一つひとつの要素を取り出すeachメソッドを用います。 取り出した要素がブロックのbackup変数に代入されます。</li>
+<li>変数sourceに、backupの拡張子を「.txt」に変えたものを代入します。 「ext」メソッドはRakeがStringクラスに追加したメソッドで、拡張子を変更するものです。 元々のStringクラスには「ext」メソッドはありません。</li>
+<li>fileコマンドでファイルタスクを定義します。 「each」メソッドで、ブロックが3回繰り返されるので、fileコマンドも3回実行され、「a.bak」「b.bak」「c.bak」の3つのファイルタスクが定義されます。</li>
+</ul>
+<p>実行してみます。</p>
+<pre><code>$ rm *.bak
+$ rake
+cp a.txt a.bak
+cp b.txt b.bak
+cp c.txt c.bak
+$ touch a.txt
+$rake
+cp a.txt a.bak
+$</code></pre>
+<ul>
+<li>バックアップファイルをすべて削除します</li>
+<li>rakeを実行すると、3つのファイル全てがコピーされます。</li>
+<li>touchを使って「a.txt」のmtimeを更新します（現在時刻に設定する）</li>
+<li>rakeを実行すると、「a.bak」のmtimeよりも「a.txt」のmtimeの方が新しいので、ファイルタスク「a.bak」のアクションを実行します。 他のファイルタスクはバックアップのmtimeの方が新しいので、アクションは実行されません。</li>
+</ul>
+<p>例の最後で「touch」を使ってmtimeを変更しましたが、通常はエディタでファイルを上書きするときにmtimeの更新が起こります。 つまり、元ファイルが新しくなるとファイルタスクのアクションを実行する条件が整うことになります。</p>
+<p>少々リファクタリングを追加し、ブロックの中でタスクのインスタンスを使う方法を紹介します。</p>
+<p>ファイルタスクの定義の部分を次のように変更します。</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true"></a>file backup =&gt; source <span class="kw">do</span> |t|</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>ブロックに新たにパラメータ「t」が加わりました。 「t」にはファイルタスク「backup」が代入されます。 このパラメータはtaskメソッドのブロックでも使えます。</p>
+<p>タスクやファイルタスクには便利なメソッドがあります。</p>
+<ul>
+<li><code>name</code> タスクの名前を返す</li>
+<li><code>prerequisites</code> 事前タスクの配列を返す</li>
+<li><code>sources</code> 自身が依存するファイルのリストを返す</li>
+<li><code>source</code> 自身が依存するファイルのリストの最初の要素を返す</li>
+</ul>
+<p>この他にもメソッドはありますが、よく使われるのは上の4つのメソッドです。</p>
+<p>新しいファイルタスクの定義では、そのアクションが「t.source」から「t.name」にコピーするように変わっています。 これは、それぞれ「source」と「backup」になりますから、以前のファイルタスクと内容的には同じです。</p>
+<h4 id="ルール">ルール</h4>
+<p>これまでのバックアップは「.txt拡張子のファイルを.bak拡張子のファイルにコピーする」というものでした。 これを「a.bak」というファイル名にあてはめれば、「a.txtをa.bakにコピーする」というアクションを持つファイルタスクが得られます。 このように、ファイルタスクを作るための規則をルールと呼びます。 ルールは「rule」メソッドで定義できます。 具体的に「rule」を使ったRakefileの例を見てみましょう。</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true"></a>backup_files =<span class="ot"> %w[</span><span class="st">a.bak b.bak c.bak</span><span class="ot">]</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true"></a>task <span class="st">default: </span>backup_files</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true"></a>rule <span class="st">&#39;.bak&#39;</span> =&gt; <span class="st">&#39;.txt&#39;</span> <span class="kw">do</span> |t|</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>はじめの3行は今までと変わりません。 3行目の定義によると、defaultの事前タスクは「a.bak」「b.bak」「c.bak」ですが、それらのタスクの定義は書かれていません。 タスクの定義がないときは、事前タスクの呼び出しの直前に、次のようにしてタスクの定義を試みます。</p>
+<ul>
+<li>ルールが定義されていて、タスク名がルールに合致するときは、そのルールを用いてタスクを定義する</li>
+<li>合致するルールが無く、タスク名が、その時点で存在するファイル名に一致すれば、タスク名のみ（事前タスクとアクションが無い）のファイルタスクを定義する</li>
+<li>以上のどれでもなければ、エラーになる</li>
+</ul>
+<p>この例におけるルールは次のようになります。</p>
+<ul>
+<li>タスク名の拡張子が「.bak」である</li>
+<li>依存するファイル名の拡張子が「.txt」である</li>
+<li>アクションは、そのタスクの「t.source」（タスクが依存するファイルの配列の最初の要素）を「t.name」（タスク名＝ファイル名）にコピーする、ということである</li>
+</ul>
+<p>3つのタスク「a.bak」「b.bak」「c.bak」はすべてルールに合致するので、ルールに従ってタスクが定義されます。 それでは、実行してみましょう。</p>
+<pre><code>$ rm *.bak
+$ rake
+cp a.txt a.bak
+cp b.txt b.bak
+cp c.txt c.bak
+$</code></pre>
+<p>今までと同じように動作しました。</p>
+<p>ruleメソッドの<code>'.bak'</code>の部分は、Rakeが正規表現<code>/\.bak$/</code>に変換します。 この正規表現とタスク名の「a.bak」「b.bak」「c.bak」が比較されるのです。 そこで、最初から正規表現にしておいてもルールを定義できます。</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true"></a>rule <span class="ot">/\.bak$/</span> =&gt; <span class="st">&#39;.txt&#39;</span> <span class="kw">do</span> |t|</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<blockquote>
+<p>[R]　このことは、「拡張子の一致」だけでなく「任意のパターンに対する一致」を可能にします。 例えば、バックアップファイルを「~a.txt」のように先頭にチルダ「<code>~</code>」を付けるように変更することが可能です。</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true"></a>backup_files =<span class="ot"> %w[</span><span class="st">~a.txt ~b.txt ~c.txt</span><span class="ot">]</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true"></a>task <span class="st">default: </span>backup_files</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true"></a></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true"></a>rule <span class="ot">/^~.*\.txt$/</span> =&gt; <span class="st">&#39;.txt&#39;</span> <span class="kw">do</span> |t|</span>
+<span id="cb36-6"><a href="#cb36-6" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>ところが、これではエラーになってしまいます。</p>
+<pre><code>$ rake
+rake aborted!
+Rake::RuleRecursionOverflowError: Rule Recursion Too Deep: [~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt]
+
+Tasks: TOP =&gt; default
+(See full trace by running task with --trace)</code></pre>
+<p>これは、<code>=&gt; '.txt'</code>の部分が良くないのです。 これだと「<sub>a.txt」の依存ファイルが、タスク名の「</sub>a.txt」の拡張子を「.txt」に変えたものである「~a.txt」になってしまいます。 つまりタスク名と依存タスク名が同じなので、ルールを適用するときに無限ループに陥ってしまうのです。 Rakeでは、16回のループが起きたときにエラーとしています。</p>
+<p>これを避けるには、依存ファイルをProcオブジェクトで定義します。</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true"></a>backup_files =<span class="ot"> %w[</span><span class="st">~a.txt ~b.txt ~c.txt</span><span class="ot">]</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true"></a></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true"></a>task <span class="st">default: </span>backup_files</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true"></a></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true"></a>rule <span class="ot">/^~.*\.txt$/</span> =&gt; proc {|tn| tn.sub(<span class="ot">/^~/</span>,<span class="st">&quot;&quot;</span>)} <span class="kw">do</span> |t|</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>procメソッドのブロックの引数には、タスク名（例えば「~a.txt」）がRakeによって渡されます。 Procインスタンスの生成には、lambdaメソッドや「-&gt;( ){ }」（<a href="https://docs.ruby-lang.org/ja/3.0/doc/symref.html#rangl">Rubyのドキュメント参照</a>）も使えます。</p>
+<p>実行してみます。</p>
+<pre><code>$ rake
+cp a.txt ~a.txt
+cp b.txt ~b.txt
+cp c.txt ~c.txt
+$</code></pre>
+</blockquote>
+<p>今回はファイルタスクの基本とルールを学びました。 次回は、ファイルタスクの後半として、ファイルリストの使い方を説明します。</p>
+<h3 id="はじめてのrake３">はじめてのRake（３）</h3>
+<p>「はじめてのRake」の第3回です。 今回はファイルタスクの説明（後半）です。 今回はファイルタスクを記述する上で便利なファイルリストとパスマップを解説します。</p>
+<p>はじめてこのブログを見る方は「<a href="https://toshiocp.com/entry/2022/07/22/112021">はじめてのRake（１）</a>」からご覧になってください。</p>
+<p>文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。 上級とは、ほぼ「クラスを記述できるレベル」を指します。 上級以外の方はこの部分を飛ばしてください。</p>
+<h4 id="ファイルリスト">ファイルリスト</h4>
+<p>ファイルリストは、ファイル名のリストで、文字列の配列と同様の操作ができ、さらにいくつかの便利な機能を備えているオブジェクトです。 まずファイルリストのインスタンスの作り方からお話しましょう。 クラス名「FileList」に<code>[ ]</code>をつけ、そのカッコのなかにファイル名をコンマで区切って書きます。 これで、そのファイルのファイルリストができます。</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;a.txt&quot;</span>, <span class="st">&quot;b.txt&quot;</span>]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true"></a>p files</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true"></a></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true"></a>task <span class="st">:default</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rake
+[&quot;a.txt&quot;, &quot;b.txt&quot;]
+$</code></pre>
+<p>シェルで良く使われるGlobパターンも使えます。</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;*.txt&quot;</span>]</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true"></a>p files</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true"></a></span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true"></a>task <span class="st">:default</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ ls
+ Rakefile   a.txt   b.txt   c.txt  &#39;~a.txt&#39;
+$ rake
+[&quot;a.txt&quot;, &quot;b.txt&quot;, &quot;c.txt&quot;, &quot;~a.txt&quot;]
+$</code></pre>
+<p>Globパターンについては<a href="https://docs.ruby-lang.org/ja/3.0/class/Dir.html#S_--5B--5D">Rubyのドキュメント</a>を参考にしてください。</p>
+<h4 id="すべてのテキストファイルのバックアップ">すべてのテキストファイルのバックアップ</h4>
+<p>すべてのテキストファイルをバックアップすることを考えてみます。 ここでは、「テキストファイル」を「拡張子が.txtのファイル」としておきます。 このとき、「すべて」というのは「現時点でのすべて」ではなく、「Rakeを実行する時点でのすべて」です。 将来テキストファイルが追加されたり、削除されたりする可能性があまりすから、「現時点でのすべてのテキストファイル」と将来「Rakeを実行する時点でのすべてのテキストファイル」は同じとは限りません。 ですから、Rakefileの記述の中に、その時点でのテキストファイルを捕まえる仕組みを作らなければなりません。 それは、ファイルリストを使うと、</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;*.txt&quot;</span>]</span></code></pre></div>
+<p>と表せます。</p>
+<p>さて、この中に「~a.txt」が含まれていますが、これはオリジナルが「a.txt」であるバックアップファイルですから、コピーの対象から外したいですね。 そのときにはexcludeメソッドを使います。</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;*.txt&quot;</span>]</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true"></a>files.exclude(<span class="st">&quot;~*.txt&quot;</span>)</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true"></a>p files</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true"></a></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true"></a>task <span class="st">:default</span></span></code></pre></div>
+<p>excludeメソッドは、与えられたパターンを自身の除外リストに加えます。 実行してみましょう。</p>
+<pre><code>$ rake
+[&quot;a.txt&quot;, &quot;b.txt&quot;, &quot;c.txt&quot;]
+$</code></pre>
+<p>「~a.txt」が取り除かれました。</p>
+<p>今ファイルリストにしたのは、オリジナルのファイルです。 Rakefileのファイルタスクはバックアップファイルでした。 どういうことかというと、例えば「a.txt」を「a.bak」にコピーするファイルタスクでは、</p>
+<ul>
+<li>タスク名は「a.bak」</li>
+<li>依存ファイル名が「a.txt」</li>
+</ul>
+<p>です。 今のファイルリストは「依存ファイルのリスト」であって、「ファイルタスク（タスク名）のリスト」ではありません。 そこで、タスク名のリストを取得する必要があります。 ファイルタスクにはextメソッドがあり、拡張子を変更できます。</p>
+<div class="sourceCode" id="cb47"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true"></a>names = sources.ext(<span class="st">&quot;.bak&quot;</span>)</span></code></pre></div>
+<p>それではRakefileを書いてみましょう。</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;*.txt&quot;</span>]</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true"></a>sources.exclude(<span class="st">&quot;~*.txt&quot;</span>)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true"></a>names = sources.ext(<span class="st">&quot;.bak&quot;</span>)</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true"></a></span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true"></a>task <span class="st">default: </span>names</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true"></a></span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true"></a>rule <span class="st">&quot;.bak&quot;</span> =&gt; <span class="st">&quot;.txt&quot;</span> <span class="kw">do</span> |t|</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rake
+cp a.txt a.bak
+cp b.txt b.bak
+cp c.txt c.bak
+$</code></pre>
+<p>上手く動きました。 ここでテキストファイルを増やして、rakeを実行してみます。</p>
+<pre><code>$ echo Appended text file. &gt;d.txt
+$ rm *.bak
+$ rake
+cp a.txt a.bak
+cp b.txt b.bak
+cp c.txt c.bak
+cp d.txt d.bak
+$</code></pre>
+<p>新しいファイル「d.txt」もコピーされました。 ということは、Rakefileが「Rake実行時点でのすべてのテキストファイル」をバックアップしたのが確認できた、ということです。</p>
+<p>この例の「*.txt」ファイルをソース、「*.bak」ファイルをターゲットということがあります。 一般に、「ソースは存在するが、ターゲットは存在するとは限らない」ということがいえます。 そのため、Rakefileではまずソースを取得して、そのソースからターゲットを生成する、という方法が良く用いられます。 上の例もその手法を用いています。</p>
+<h4 id="パスマップ">パスマップ</h4>
+<p>パスマップ・メソッドはファイルリストの強力なメソッドです。 元々はpathmapはStringオブジェクトのインスタンス・メソッドです。 これをFileListの各要素に対して実行するのがファイルリストのパスマップ・メソッドです。 パスマップは、その引数によって、様々な情報を返します。 よく使われる例をあげます。</p>
+<ul>
+<li>%p =&gt; 完全なパスを表します</li>
+<li>%f =&gt; 拡張子付きのファイル名を表します。ディレクトリ名は含まれません。</li>
+<li>%n =&gt; 拡張子なしのファイル名を表します。</li>
+<li>%d =&gt; パスに含まれるディレクトリのリストを表します。</li>
+</ul>
+<p>Rakefileにパスマップの例を書いて実行してみましょう。 まず、カレントディレクトリの下に「src」ディレクトリを作り、その下に「a.txt」「b.txt」「c.txt」を作ります。</p>
+<pre><code>$ mkdir src
+$ touch src/a.txt src/b.txt src/c.txt
+$ tree
+.
+├── Rakefile
+├── a.bak
+├── a.txt
+├── b.bak
+├── b.txt
+├── c.bak
+├── c.txt
+├── d.bak
+├── d.txt
+├── src
+│   ├── a.txt
+│   ├── b.txt
+│   └── c.txt
+└── ~a.txt
+
+1 directory, 14 files
+$</code></pre>
+<p>Rakefileを次のように書きます。</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;src/*.txt&quot;</span>]</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true"></a>p sources.pathmap(<span class="st">&quot;%p&quot;</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true"></a>p sources.pathmap(<span class="st">&quot;%f&quot;</span>)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true"></a>p sources.pathmap(<span class="st">&quot;%n&quot;</span>)</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true"></a>p sources.pathmap(<span class="st">&quot;%d&quot;</span>)</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true"></a></span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true"></a>task <span class="st">:default</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rake
+[&quot;src/a.txt&quot;, &quot;src/b.txt&quot;, &quot;src/c.txt&quot;]
+[&quot;a.txt&quot;, &quot;b.txt&quot;, &quot;c.txt&quot;]
+[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]
+[&quot;src&quot;, &quot;src&quot;, &quot;src&quot;]</code></pre>
+<p>パスマップでは、単純な文字列置換を行うための置換パターンを表すパラメータを指定することが出来ます。 パターンと置換文字列はコンマで区切り、全体を波括弧でくくります。 置換指定は、% と指示子の間に置きます。</p>
+<p>パスマップの置換指定を使って、「srcディレクトリ以下のすべてのテキストファイルをdstディレクトリ以下にバックアップする」というRakefileを作ってみましょう。</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;src/*.txt&quot;</span>]</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true"></a>names = sources.pathmap(<span class="st">&quot;%{src,dst}p&quot;</span>)</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true"></a></span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true"></a>task <span class="st">default: </span>names</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true"></a>mkdir <span class="st">&quot;dst&quot;</span> <span class="kw">unless</span> <span class="dt">Dir</span>.exist?(<span class="st">&quot;dst&quot;</span>)</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true"></a>names.each <span class="kw">do</span> |name|</span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true"></a>  source = name.pathmap(<span class="st">&quot;%{dst,src}p&quot;</span>)</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true"></a>  file name =&gt; source <span class="kw">do</span> |t|</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true"></a>    cp t.source, t.name</span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>2行目でパスマップの置換指定を使っています。</p>
+<ul>
+<li><code>sources</code>は配列<code>["src/a.txt", "src/b.txt", "src/c.txt"]</code>なので</li>
+<li><code>names</code>は配列<code>["dst/a.txt", "dst/b.txt", "dst/c.txt"]</code>になる</li>
+</ul>
+<p>6行目では、バックアップ先のディレクトリ「dst」が存在しなければ作成します。 mkdirはFileUtilsモジュールのメソッドですが、このモジュールはRakeがrequireするので、このように使うことが出来ます。 8行目では文字列のpathmapメソッドを使っています。</p>
+<ul>
+<li><code>name</code>が<code>dst/a.txt</code>または<code>dst/b.txt</code>または<code>dst/c.txt</code>なので</li>
+<li>sourceは<code>src/a.txt</code>または<code>src/b.txt</code>または<code>src/c.txt</code>になる</li>
+</ul>
+<blockquote>
+<p>[R]　正規表現とProcオブジェクトを使ったルールを用いることもできます。</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;src/*.txt&quot;</span>]</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true"></a>names = sources.pathmap(<span class="st">&quot;%{src,dst}p&quot;</span>)</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true"></a></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true"></a>task <span class="st">default: </span>names</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true"></a></span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true"></a>mkdir <span class="st">&quot;dst&quot;</span> <span class="kw">unless</span> <span class="dt">Dir</span>.exist?(<span class="st">&quot;dst&quot;</span>)</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true"></a></span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true"></a>rule <span class="ot">/^dst\/.*\.txt$/</span> =&gt; proc {|tn| tn.pathmap(<span class="st">&quot;%{dst,src}p&quot;</span>)} <span class="kw">do</span> |t|</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>実行してみます。</p>
+<pre><code>$ rm dst/*
+$ rake
+cp src/a.txt dst/a.txt
+cp src/b.txt dst/b.txt
+cp src/c.txt dst/c.txt
+$</code></pre>
+</blockquote>
+<h4 id="ディレクトリタスク">ディレクトリタスク</h4>
+<p>ディレクトリタスクを作るdirectoryメソッドを最後に紹介します。 ディレクトリタスクはタスク名の「ディレクトリが存在しなければ作成する」というタスクです。</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true"></a>directory <span class="st">&quot;a/b/c&quot;</span></span></code></pre></div>
+<p>このディレクトリタスクは、「a/b/c」というディレクトリを作成するタスクです。 もし、cの親であるb、aも存在しなければ、それも作成します。</p>
+<p>これを用いてdstディレクトリを作ることもできます。</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;src/*.txt&quot;</span>]</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true"></a>names = sources.pathmap(<span class="st">&quot;%{src,dst}p&quot;</span>)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true"></a></span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true"></a>task <span class="st">default: </span>names</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true"></a>directory <span class="st">&quot;dst&quot;</span></span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true"></a></span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true"></a>rule <span class="ot">/^dst\/.*\.txt$/</span> =&gt; [proc {|tn| tn.pathmap(<span class="st">&quot;%{dst,src}p&quot;</span>)}, <span class="st">&quot;dst&quot;</span>] <span class="kw">do</span> |t|</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<p>注意しなければいけないのは、ディレクトリタスクは「タスク」なので、Rakefileのロード、実行中はそのタスクが定義されるだけで、ディレクトリの作成はRakefileのロード、実行後に行われるということです。 そのため、タスクの依存関係の中にディレクトリタスクを組み込まなければなりません。 例では、ルールの事前タスクにディレクトリタスクを追加しました。 このことにより、コピーの前にディレクトリの作成が行われます。</p>
+<p>以上、ファイルタスクを補助するファイルリスト、パスマップ・メソッド、ディレクトリタスクについて説明しました。 次回はこれまでの知識を使って、実践的なRakefileを書いてみます。</p>
+<h3 id="はじめてのrake４">はじめてのRake（４）</h3>
+<p>「はじめてのRake」の第4回です。 今回はRakeの応用です。 Pandocを使ってマークダウンからHTMLを作る例を紹介します。</p>
+<p>はじめてこのブログを見る方は「<a href="https://toshiocp.com/entry/2022/07/22/112021">はじめてのRake（１）</a>」からご覧になってください。</p>
+<p>文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。 上級とは、ほぼ「クラスを記述できるレベル」を指します。 上級以外の方はこの部分を飛ばしてください。</p>
+<h4 id="pandoc">Pandoc</h4>
+<p>まず、Pandocがどのようなアプリケーションなのかを説明します。 Pandocは、文書の形式を変換するアプリケーションです。 例えば、</p>
+<ul>
+<li>Wordの文書をHTML文書にする</li>
+<li>Markdownの文書をPDF文書にする</li>
+</ul>
+<p>これ以外にも多数の文書形式がサポートされています。 詳しくは<a href="https://pandoc.org/">Pandocのウェブサイト</a>をご覧ください。</p>
+<p>例として<code>example.docx</code>というワードファイルをHTMLにしてみましょう。 ワードファイルはこんな感じです。</p>
+<figure class="figure-image figure-image-fotolife" title="example.docx">
+[f:id:ToshioCP:20220725174426p:plain]
+<figcaption>
+example.docx
+</figcaption>
+</figure>
+<pre><code>$ pandoc -so example.html example.docx</code></pre>
+<p>これにより、<code>example.html</code>というファイルができます。 ダブルクリックするとブラウザで内容が表示されます。</p>
+<figure class="figure-image figure-image-fotolife" title="example.html">
+[f:id:ToshioCP:20220725174526p:plain]
+<figcaption>
+example.html
+</figcaption>
+</figure>
+<p>画面の見栄えはともかく、ワードで書いた内容がHTMLとして表示されていることが確認できるでしょう。</p>
+<p>では、どのようなHTMLが生成されたのでしょうか。</p>
+<div class="sourceCode" id="cb60"><pre class="sourceCode html"><code class="sourceCode html"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true"></a><span class="dt">&lt;!DOCTYPE </span>html<span class="dt">&gt;</span></span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true"></a><span class="kw">&lt;html</span><span class="ot"> xmlns=</span><span class="st">&quot;http://www.w3.org/1999/xhtml&quot;</span><span class="ot"> lang=</span><span class="st">&quot;&quot;</span><span class="ot"> xml:lang=</span><span class="st">&quot;&quot;</span><span class="kw">&gt;</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true"></a><span class="kw">&lt;head&gt;</span></span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true"></a>  <span class="kw">&lt;meta</span><span class="ot"> charset=</span><span class="st">&quot;utf-8&quot;</span> <span class="kw">/&gt;</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true"></a>  <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">&quot;generator&quot;</span><span class="ot"> content=</span><span class="st">&quot;pandoc&quot;</span> <span class="kw">/&gt;</span></span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true"></a>  <span class="kw">&lt;meta</span><span class="ot"> name=</span><span class="st">&quot;viewport&quot;</span><span class="ot"> content=</span><span class="st">&quot;width=device-width, initial-scale=1.0, user-scalable=yes&quot;</span> <span class="kw">/&gt;</span></span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true"></a>  <span class="kw">&lt;title&gt;</span>example<span class="kw">&lt;/title&gt;</span></span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true"></a>  <span class="kw">&lt;style&gt;</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true"></a>    code{<span class="kw">white-space</span>: <span class="dv">pre-wrap</span><span class="op">;</span>}</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true"></a>    span<span class="fu">.smallcaps</span>{<span class="kw">font-variant</span>: <span class="dv">small-caps</span><span class="op">;</span>}</span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true"></a>    span<span class="fu">.underline</span>{<span class="kw">text-decoration</span>: <span class="dv">underline</span><span class="op">;</span>}</span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true"></a>    div<span class="fu">.column</span>{<span class="kw">display</span>: <span class="dv">inline-block</span><span class="op">;</span> <span class="kw">vertical-align</span>: <span class="dv">top</span><span class="op">;</span> <span class="kw">width</span>: <span class="dv">50</span><span class="dt">%</span><span class="op">;</span>}</span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true"></a>    div<span class="fu">.hanging-indent</span>{<span class="kw">margin-left</span>: <span class="dv">1.5</span><span class="dt">em</span><span class="op">;</span> <span class="kw">text-indent</span>: <span class="dv">-1.5</span><span class="dt">em</span><span class="op">;</span>}</span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true"></a>    ul<span class="fu">.task-list</span>{<span class="kw">list-style</span>: <span class="dv">none</span><span class="op">;</span>}</span>
+<span id="cb60-15"><a href="#cb60-15" aria-hidden="true"></a>  <span class="kw">&lt;/style&gt;</span></span>
+<span id="cb60-16"><a href="#cb60-16" aria-hidden="true"></a><span class="kw">&lt;/head&gt;</span></span>
+<span id="cb60-17"><a href="#cb60-17" aria-hidden="true"></a><span class="kw">&lt;body&gt;</span></span>
+<span id="cb60-18"><a href="#cb60-18" aria-hidden="true"></a><span class="kw">&lt;h2</span><span class="ot"> id=</span><span class="st">&quot;pandocのインストール&quot;</span><span class="kw">&gt;&lt;strong&gt;</span>P<span class="kw">&lt;/strong&gt;</span>andocのインストール<span class="kw">&lt;/h2&gt;</span></span>
+<span id="cb60-19"><a href="#cb60-19" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>以下ではUbuntu22.04でのインストールを説明する。<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-20"><a href="#cb60-20" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>端末から、apt-getを使ってインストールする。<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-21"><a href="#cb60-21" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>$ sudo apt-get install pandoc<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-22"><a href="#cb60-22" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>これでインストールできるPandocはたいていの場合、最新版ではない。Pandocの最新版は、</span>
+<span id="cb60-23"><a href="#cb60-23" aria-hidden="true"></a>そのホームページからダウンロードできる。インストーラがあるので、それを用いるのが簡単である。<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-24"><a href="#cb60-24" aria-hidden="true"></a><span class="kw">&lt;h2</span><span class="ot"> id=</span><span class="st">&quot;rubyのインストール&quot;</span><span class="kw">&gt;</span>Rubyのインストール<span class="kw">&lt;/h2&gt;</span></span>
+<span id="cb60-25"><a href="#cb60-25" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>端末から、apt-getを使ってインストールする。<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-26"><a href="#cb60-26" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>$ sudo apt-get install ruby<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-27"><a href="#cb60-27" aria-hidden="true"></a><span class="kw">&lt;p&gt;</span>最新版のRubyをインストールにはrbenvが良いが、rbenvをマスターするには時間がかかる。</span>
+<span id="cb60-28"><a href="#cb60-28" aria-hidden="true"></a>詳しくは<span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;https://github.com/rbenv/rbenv&quot;</span><span class="kw">&gt;</span>rbenv<span class="kw">&lt;/a&gt;</span>と</span>
+<span id="cb60-29"><a href="#cb60-29" aria-hidden="true"></a><span class="kw">&lt;a</span><span class="ot"> href=</span><span class="st">&quot;https://github.com/rbenv/ruby-build&quot;</span><span class="kw">&gt;</span>ruby-build<span class="kw">&lt;/a&gt;</span>のウェブサイトを参照してほしい。<span class="kw">&lt;/p&gt;</span></span>
+<span id="cb60-30"><a href="#cb60-30" aria-hidden="true"></a><span class="kw">&lt;/body&gt;</span></span>
+<span id="cb60-31"><a href="#cb60-31" aria-hidden="true"></a><span class="kw">&lt;/html&gt;</span></span></code></pre></div>
+<p>HTMLのソースコードから分かることで最も重要なことは、ヘッダが追加されていることです。 これはpandocに<code>-s</code>オプションをつけたからです。 <code>-s</code>をつけなければ、bodyタグで挟まれた本文の部分だけが生成されます。</p>
+<h4 id="マークダウンをhtmlに変換する">マークダウンをHTMLに変換する</h4>
+<p>ここからは、マークダウンをHTMLに変換し、さらにRakeで作業を自動化する方法を学びます。</p>
+<p>ソースファイルはすべてカレントディレクトリにあるとします。 生成するHTMLはdocsディレクトリに作成します。 マークダウンファイルは、「sec1.md」「sec2.md」「sec3.md」「sec4.md」ですが、将来ファイルが増えても対応できるようにRakefileを作ります。</p>
+<p>※　「sec1.md」は「はじめてのRake（１）」の編集画面に書き込んだマークダウンファイルに手を加えたものです。 「sec2.md」「sec3.md」「sec4.md」も同様に「はじめてのRake」のマークダウンファイルです。 これらのソースコードはこの記事の最後に載せておきますので、Rakefileを試すときにコピペして使ってください。</p>
+<p>Pandocでは、最初に%とともにメタデータを書きます。 これは、タイトル、著者、日付を表します。</p>
+<pre><code>% はじめてのRake
+% ToshioCP
+% 2022/7/25</code></pre>
+<p>タイトルはHTMLのヘッダのタイトル・タグの内容にもなります。</p>
+<p>PandocでHTMLにすると画面全面を使うので、横幅のあるPCでは広がりすぎて読みにくくなります。 それを解消するために、次のCSSファイル「style.css」を用意しました。</p>
+<div class="sourceCode" id="cb62"><pre class="sourceCode css"><code class="sourceCode css"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true"></a>body {</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true"></a>  <span class="kw">width</span>: <span class="dv">100</span><span class="dt">%</span><span class="op">;</span></span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true"></a>  <span class="kw">padding-right</span>: <span class="dv">0.75</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true"></a>  <span class="kw">padding-left</span>: <span class="dv">0.75</span><span class="dt">rem</span><span class="op">;</span></span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true"></a>  <span class="kw">margin-right</span>: <span class="bu">auto</span><span class="op">;</span></span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true"></a>  <span class="kw">margin-left</span>: <span class="bu">auto</span><span class="op">;</span></span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true"></a>}</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true"></a></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true"></a><span class="im">@media</span> (<span class="kw">min-width</span>: <span class="dv">576</span><span class="dt">px</span>) {</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true"></a>  body {</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true"></a>    <span class="kw">max-width</span>: <span class="dv">540</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true"></a>  }</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true"></a>}</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true"></a><span class="im">@media</span> (<span class="kw">min-width</span>: <span class="dv">768</span><span class="dt">px</span>) {</span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true"></a>  body {</span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true"></a>    <span class="kw">max-width</span>: <span class="dv">720</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb62-17"><a href="#cb62-17" aria-hidden="true"></a>  }</span>
+<span id="cb62-18"><a href="#cb62-18" aria-hidden="true"></a>}</span>
+<span id="cb62-19"><a href="#cb62-19" aria-hidden="true"></a><span class="im">@media</span> (<span class="kw">min-width</span>: <span class="dv">992</span><span class="dt">px</span>) {</span>
+<span id="cb62-20"><a href="#cb62-20" aria-hidden="true"></a>  body {</span>
+<span id="cb62-21"><a href="#cb62-21" aria-hidden="true"></a>    <span class="kw">max-width</span>: <span class="dv">960</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb62-22"><a href="#cb62-22" aria-hidden="true"></a>  }</span>
+<span id="cb62-23"><a href="#cb62-23" aria-hidden="true"></a>}</span>
+<span id="cb62-24"><a href="#cb62-24" aria-hidden="true"></a><span class="im">@media</span> (<span class="kw">min-width</span>: <span class="dv">1200</span><span class="dt">px</span>) {</span>
+<span id="cb62-25"><a href="#cb62-25" aria-hidden="true"></a>  body {</span>
+<span id="cb62-26"><a href="#cb62-26" aria-hidden="true"></a>    <span class="kw">max-width</span>: <span class="dv">1140</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb62-27"><a href="#cb62-27" aria-hidden="true"></a>  }</span>
+<span id="cb62-28"><a href="#cb62-28" aria-hidden="true"></a>}</span>
+<span id="cb62-29"><a href="#cb62-29" aria-hidden="true"></a><span class="im">@media</span> (<span class="kw">min-width</span>: <span class="dv">1400</span><span class="dt">px</span>) {</span>
+<span id="cb62-30"><a href="#cb62-30" aria-hidden="true"></a>  body {</span>
+<span id="cb62-31"><a href="#cb62-31" aria-hidden="true"></a>    <span class="kw">max-width</span>: <span class="dv">1320</span><span class="dt">px</span><span class="op">;</span></span>
+<span id="cb62-32"><a href="#cb62-32" aria-hidden="true"></a>  }</span>
+<span id="cb62-33"><a href="#cb62-33" aria-hidden="true"></a>}</span></code></pre></div>
+<p>このCSSはBootstrapのcontainerクラスの定義を参考に作りました。 CSSの内容説明は省略します。</p>
+<p>これを<code>style.css</code>という名前のファイルにしてRakefileのあるディレクトリに保存します。</p>
+<p>Pandocで<code>-c</code>オプションを使うと、生成されたHTMLのヘッダで<code>style.css</code>を取り込むようになります。</p>
+<h4 id="rakefileの作成">Rakefileの作成</h4>
+<p>それでは、「sec1.md」から「sec4.md」までの4つのファイルからHTMLファイルを作るRakefileを作ってみましょう。 ここで、2つの考え方があります。</p>
+<ul>
+<li>sec1からsec4までを別々のHTMLファイルにし、それらをリンクでつなぐ。 目次を含むトップページはそれらとは別に作る</li>
+<li>sec1.mdからsec4.mdまでを一つのファイルにつなげ、それをHTMLにする。</li>
+</ul>
+<p>どちらにも一長一短があります。 ここでは、作成の簡単な2番目の方法を採用しましょう。</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec*.md&quot;</span>]</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true"></a></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true"></a></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true"></a>file <span class="st">&quot;docs/はじめてのRake.html&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">はじめてのRake.md docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true"></a>  sh <span class="st">&quot;pandoc -s --toc -c style.css -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true"></a></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true"></a>  firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true"></a>  <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true"></a></span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true"></a>file <span class="st">&quot;docs/style.css&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">style.css docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true"></a></span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true"></a>directory <span class="st">&quot;docs&quot;</span></span></code></pre></div>
+<p>少しタスクの間の関連が複雑になっています。</p>
+<ul>
+<li>デフォルトのタスク「default」の事前タスクは「docs/はじめてのRake.html」と「docs/style.css」です</li>
+<li>「docs/はじめてのRake.html」はマークダウン「はじめてのRake.md」とディレクトリ「docs」に依存しています</li>
+<li>「はじめてのRake.md」は4つのファイル（「sec1.md」から「sec4.md」）に依存しています</li>
+<li>「docs/style.css」はそのコピー元の「style.css」とディレクトリ「docs」に依存しています</li>
+<li>「docs」はディレクトリタスクで、directoryメソッドで定義されます</li>
+</ul>
+<p>6行目の<code>sh</code>は、Rubyの<code>system</code>メソッドと似ています。 引数を外部コマンドとして実行します。 6行目の場合、シェルを介してpandocを起動します。 <code>sh</code>メソッドはRakeがFileUtilsに拡張したもので、オリジナルのFileUtilsにはありません。</p>
+<p>Pandocの<code>--toc</code>オプションは目次を自動生成するオプションです。 デフォルトでは<code>#</code>から<code>###</code>までが目次になります。</p>
+<p>10行目の<code>inject</code>メソッドは畳み込みを行う、配列インスタンスのメソッドです。 引数を初期値として、配列の値を次々にs2に代入して計算し、結果を次のs1に代入します。 順を追って説明しましょう</p>
+<ul>
+<li>初期値は引数の空文字列<code>""</code>です。 それがブロックのs1に代入されます</li>
+<li>s2には最初の配列の要素である「sec1.md」が代入され、ブロック本体の<code>s1 &lt;&lt; File.read(s2) + "\n"</code>が実行されます。 これにより、s1には「sec1.mdの内容＋改行」が代入され、それが次のブロックのs1に代入されます。</li>
+<li>2回目のブロック実行で、s1は「sec1.mdの内容＋改行」、s2には次の配列要素の「sec2.md」が代入されます。 ブロック本体が実行され、「s1」には「sec2.mdの内容＋改行」が追加されます。 その結果、s1は「se1.mdの内容＋改行＋sec2.mdの内容＋改行」となります。 これが次のs1に代入されます。</li>
+<li>3回目のブロック実行で、s1には前回実行の結果、s2には次の配列要素の「sec3.md」が代入されます。 前と同様に「sec3.mdの内容＋改行」が追加されます。</li>
+<li>4回目（最後）のブロック実行で、s1には前回実行の結果、s2には次の配列要素の「sec4.md」が代入されます。 前と同様に「sec4.mdの内容＋改行」が追加されます。</li>
+<li>以上の結果、firstrakeには「sec1.mdの内容＋改行＋sec2.mdの内容＋改行＋sec3.mdの内容＋改行＋sec4.mdの内容＋改行」が代入されます。 要するに、4つのファイルを改行を挟んで結合した文字列になります。 11行目でそれがファイル「はじめてのRake.md」として保存されます。</li>
+</ul>
+<p>改行をファイルの末尾に足したのは、一般に「テキストファイルの末尾は改行がある場合とない場合がある」からです。 改行が無い場合に次のファイルを接続すると、2番めのファイルの先頭の文字が行頭に来ません。 すると、見出しの「#」が行頭からずれて見出しでなくなるということが起こりえます。 これを避けるために改行を足しているのです。</p>
+<h4 id="cleanとclobber">cleanとclobber</h4>
+<p>この処理において「はじてのRake.md」というファイルは中間ファイルです。 重要なのはソースファイルと結果ファイルだと考えれば、処理後に中間ファイルは削除したいと思うかもしれません。 そのような操作を行うのがcleanタスクです。 cleanタスクを使うには</p>
+<ul>
+<li><code>rake/clean</code>をrequireする</li>
+<li>定数<code>CLEAN</code>の指すファイルリスト・オブジェクト（それも「CLEAN」と呼ぶことにします）に中間ファイルを追加する。 ファイルリストには配列と同様のメソッドが備わっているので、<code>&lt;&lt;</code>または<code>append</code>、<code>push</code>メソッドで追加ができる。</li>
+</ul>
+<p>また、結果ファイルも含めて全て生成ファイルを消去するタスクがclobberです。</p>
+<ul>
+<li>clobberタスクは、CLEANに登録されたファイルを削除する</li>
+<li>さらに、ファイルリストCLOBBERに登録されたファイルも削除する</li>
+</ul>
+<p>以上を付け加えたRakefileは次のようになります。</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true"></a></span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec*.md&quot;</span>]</span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true"></a></span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true"></a></span>
+<span id="cb64-7"><a href="#cb64-7" aria-hidden="true"></a>file <span class="st">&quot;docs/はじめてのRake.html&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">はじめてのRake.md docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb64-8"><a href="#cb64-8" aria-hidden="true"></a>  sh <span class="st">&quot;pandoc -s --toc -c style.css -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb64-9"><a href="#cb64-9" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb64-10"><a href="#cb64-10" aria-hidden="true"></a><span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake.md&quot;</span></span>
+<span id="cb64-11"><a href="#cb64-11" aria-hidden="true"></a></span>
+<span id="cb64-12"><a href="#cb64-12" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
+<span id="cb64-13"><a href="#cb64-13" aria-hidden="true"></a>  firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
+<span id="cb64-14"><a href="#cb64-14" aria-hidden="true"></a>  <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
+<span id="cb64-15"><a href="#cb64-15" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb64-16"><a href="#cb64-16" aria-hidden="true"></a></span>
+<span id="cb64-17"><a href="#cb64-17" aria-hidden="true"></a>file <span class="st">&quot;docs/style.css&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">style.css docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb64-18"><a href="#cb64-18" aria-hidden="true"></a>  cp t.source, t.name</span>
+<span id="cb64-19"><a href="#cb64-19" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb64-20"><a href="#cb64-20" aria-hidden="true"></a></span>
+<span id="cb64-21"><a href="#cb64-21" aria-hidden="true"></a>directory <span class="st">&quot;docs&quot;</span></span>
+<span id="cb64-22"><a href="#cb64-22" aria-hidden="true"></a><span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;docs&quot;</span></span></code></pre></div>
+<p>中間ファイルを削除するには</p>
+<pre><code>$ rake clean</code></pre>
+<p>生成ファイル全てを削除するには</p>
+<pre><code>$ rake clobber</code></pre>
+<p>とします。</p>
+<p>以上で4回にわたった「はじめてのRake」を終わります。 ここでは基本的な事項に限定して説明しましたが、それだけでもRakefileを書くのに十分な知識は得られたと思います。 これ以外には、</p>
+<ul>
+<li>タスクをマルチスレッドで実行し、高速化するための<code>multitask</code>メソッド</li>
+<li>Rakefileをカレントディレクトリ以外に置くこと、複数のRakefileを使うこと</li>
+<li>タスクの名前空間</li>
+<li>タスクの説明をするための<code>describe</code>メソッド</li>
+<li><code>rake</code>コマンドのオプション、とくにトレースなどのデバッグに使えるもの</li>
+</ul>
+<p>などへ学習を進めていくと良いと思います。</p>
+<p>また、Rakeの機能を学習するだけでなく、ビルドをどのように構成するかについての学習も大事です。 これには経験を重ねることが一番大事だと思います。</p>
+</body>
+</html>
