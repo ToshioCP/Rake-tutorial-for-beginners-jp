@@ -1,0 +1,7 @@
+# .gitignore
+
+# Ignore all backupfiles made by gedit
+*~
+
+# Ignore intermediate file.
+はじめてのRake.md
