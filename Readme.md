@@ -1,4 +1,4 @@
-ブログ「おもこん」に載せた「[はじめてのRake](https://toshiocp.com/entry/2022/07/25/180931)」のチュートリアルの例をそのままGithubにあげたものです。
+ブログ「おもこん」に載せた「[はじめてのRake](https://toshiocp.com/entry/2022/07/25/180931)」のチュートリアルにいくつか書き加えてGithubにあげたものです。
 また、Github pagesの機能を使って、[HTML](https://toshiocp.github.io/Rake-tutorial-for-beginners-jp/はじめてのRake.html)を見ることができます。
 
 内容は「Rakeの初歩」ですが、一部深入りしています。
@@ -10,14 +10,14 @@ gitでクローンも可能です。
 
 #### Rakefileについて
 
-Rakefileはトップディレクトリの「sec1.md」から「sec4.md」と「style.css」をもとに「docs」ディレクトリにHTMLファイルを作ります。
-ご自分でこれらのファイルをカスタマイズしたら、
+Rakefileはトップディレクトリの「sec*.md」と「style.css」をもとに「docs」ディレクトリにHTMLファイルを作ります。
+HTMLファイルを作るには
 
 ```
 $ rake
 ```
 
-でHTMLに変更を反映させることができます。
+とタイプします。
 
 `rake clean`で中間ファイルの「はじめてのRake.md」を削除、`rake clobber`でさらに「docs」ディレクトリを削除します。
 削除後の状態が初期状態になります。
