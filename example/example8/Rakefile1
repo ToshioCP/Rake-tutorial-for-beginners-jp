@@ -1,0 +1,13 @@
+require 'rake/clean'
+
+files = FileList["../../sec*.md"]
+
+task default: files
+
+files.each do |f|
+  task f do
+    sh "ruby fre.rb #{f} > #{f.pathmap('%f').ext('txt')}"
+  end
+end
+
+CLEAN.include files.pathmap('%f').ext('txt')

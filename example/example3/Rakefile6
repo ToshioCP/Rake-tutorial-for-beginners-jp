@@ -1,0 +1,12 @@
+sources = FileList["src/*.txt"]
+names = sources.pathmap("%{src,dst}p")
+
+task default: names
+
+mkdir "dst" unless Dir.exist?("dst")
+names.each do |name|
+  source = name.pathmap("%{dst,src}p")
+  file name => source do |t|
+    cp t.source, t.name
+  end
+end

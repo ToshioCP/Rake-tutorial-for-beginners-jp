@@ -1,0 +1,9 @@
+task :how, [:person1, :person2] => :hello do |t, args|
+  print "How are you, #{args.person1}?\n"
+  print "How are you, #{args.person2}?\n"
+end
+
+task :hello, [:person1, :person2] do |t, args|
+  print "Hello, #{args.person1}.\n"
+  print "Hello, #{args.person2}.\n"
+end

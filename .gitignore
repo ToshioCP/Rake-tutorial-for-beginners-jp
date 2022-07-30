@@ -5,3 +5,17 @@
 
 # Ignore intermediate file.
 はじめてのRake.md
+
+# Ignore generated files under the example folder
+example/example2/*.bak
+example/example2/~*.txt
+example/example3/*.bak
+example/example3/dst
+example/example4/はじめてのRake.md
+example/example4/dst
+example/example5/はじめてのRake.md
+example/example5/はじめてのRake.pdf
+example/example6/はじめてのRake.md
+example/example6/dst
+example/example6/はじめてのRake.pdf
+example/example8/sec*.txt

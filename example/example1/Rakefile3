@@ -1,0 +1,7 @@
+task second: :first do
+  print "Second.\n"
+end
+
+task :first do
+  print "First.\n"
+end

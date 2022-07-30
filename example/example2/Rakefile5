@@ -1,0 +1,10 @@
+backup_files = %w[a.bak b.bak c.bak]
+
+task default: backup_files
+
+backup_files.each do |backup|
+  source = backup.ext(".txt")
+  file backup => source do |t|
+    cp t.source, t.name
+  end
+end

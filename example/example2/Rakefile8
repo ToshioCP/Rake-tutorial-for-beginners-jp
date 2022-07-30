@@ -1,0 +1,7 @@
+backup_files = %w[~a.txt ~b.txt ~c.txt]
+
+task default: backup_files
+
+rule /^~.*\.txt$/ => proc {|tn| tn.sub(/^~/,"")} do |t|
+  cp t.source, t.name
+end

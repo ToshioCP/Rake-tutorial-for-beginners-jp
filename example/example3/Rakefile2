@@ -1,0 +1,4 @@
+files = FileList["*.txt"]
+p files
+
+task :default

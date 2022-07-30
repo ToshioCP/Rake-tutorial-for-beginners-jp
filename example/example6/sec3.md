@@ -25,7 +25,7 @@ task :default
 ここでRakeの動作をもう一度確認しておきましょう。
 
 1. Rakeの実行環境を初期化する
-2. Rakefileをロードする。このときRakefileは（Rubyコードとして）実行される
+2. Rakefileはロードする。このときRakefileは（Rubyコードとして）実行される
 3. デフォルトタスクを呼び出す
 
 2番めのRakefileロード時に、ファイルリストが作成され、表示され、デフォルトタスクの定義が行われます。
@@ -50,7 +50,7 @@ task :default
 ```
 
 実行してみます。
-（`example/example3`では`-f Rakefile2`をつけて実行してください）
+（`example/example3`では`-f Rakefile2`をつけて実行してください。
 `ls`や`rake`の結果はそのディレクトリに含まれるファイルによって異なります。
 Rakefile3以降でも`ls`や`rake`の結果が異なることがあります）
 
@@ -258,7 +258,7 @@ mkdirはFileUtilsモジュールのメソッドですが、このモジュール
 8行目では文字列のpathmapメソッドを使って、タスク名から依存ファイル名を取得しています。
 
 - `name`が`dst/a.txt`または`dst/b.txt`または`dst/c.txt`なので
-- `source`は`src/a.txt`または`src/b.txt`または`src/c.txt`になる
+- sourceは`src/a.txt`または`src/b.txt`または`src/c.txt`になる
 
 `example/example3`フォルダでは`Rakefile6`を使って試してください。
 
@@ -294,7 +294,7 @@ mkdirはFileUtilsモジュールのメソッドですが、このモジュール
 #### ディレクトリタスク
 
 ディレクトリタスクを作るdirectoryメソッドをこのセクションの最後に紹介します。
-ディレクトリタスクは「タスク名のディレクトリが存在しなければ作成する」というタスクです。
+ディレクトリタスクはタスク名の「ディレクトリが存在しなければ作成する」というタスクです。
 
 ```ruby
 directory "a/b/c"

@@ -1,0 +1,13 @@
+task copy: %w[a.bak b.bak c.bak]
+
+file "a.bak" => "a.txt" do
+  cp "a.txt", "a.bak"
+end
+
+file "b.bak" => "b.txt" do
+  cp "b.txt", "b.bak"
+end
+
+file "c.bak" => "c.txt" do
+  cp "c.txt", "c.bak"
+end

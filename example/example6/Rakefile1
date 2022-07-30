@@ -1,0 +1,56 @@
+require 'rake/clean'
+
+sources = FileList["sec1.md", "sec2.md", "sec3.md", "sec4.md"]
+sources_pdf = sources.pathmap("%{sec,sec_pdf}p")
+
+desc "HTMLとPDFの両方のファイルを作成します"
+task default: %w[html:build pdf:build]
+
+namespace "html" do
+  desc "HTMLのファイルを作成します"
+  task build: %w[docs/はじめてのRake.html docs/style.css]
+  
+  file "docs/はじめてのRake.html" => %w[はじめてのRake.md docs] do |t|
+    sh "pandoc -s --toc --metadata-file=metadata_html.yml -c style.css -o #{t.name} #{t.source}"
+  end
+  CLEAN << "はじめてのRake.md"
+  
+  file "はじめてのRake.md" => sources do |t|
+    firstrake = t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"}
+    File.write("はじめてのRake.md", firstrake)
+  end
+
+  file "docs/style.css" => %w[style.css docs] do |t|
+    cp t.source, t.name
+  end
+
+  directory "docs"
+  CLOBBER << "docs"
+end
+
+namespace "pdf" do
+  desc "PDFのファイルを作成します"
+  task build: %w[はじめてのRake.pdf]
+
+  file "はじめてのRake.pdf" => "はじめてのRake_pdf.md" do |t|
+    sh "pandoc -s --pdf-engine lualatex --metadata-file=metadata_pdf.yml -o #{t.name} #{t.source}"
+  end
+  CLEAN << "はじめてのRake_pdf.md"
+  
+  file "はじめてのRake_pdf.md" => sources_pdf do |t|
+    firstrake = t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"}
+    File.write("はじめてのRake_pdf.md", firstrake)
+  end
+  CLEAN.include sources_pdf
+
+  sources_pdf.each do |dst|
+    src = dst.sub(/_pdf/,"")
+    file dst => src do
+      s = File.read(src)
+      s = s.gsub(/^###/,"#").gsub(/^####/,"##").gsub(/^#####/,"###")
+      File.write(dst, s)
+    end
+  end
+
+  CLOBBER << "はじめてのRake.pdf"
+end

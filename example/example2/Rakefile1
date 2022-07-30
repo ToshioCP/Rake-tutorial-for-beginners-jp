@@ -1,0 +1,3 @@
+file "a.bak" => "a.txt" do
+  cp "a.txt", "a.bak"
+end

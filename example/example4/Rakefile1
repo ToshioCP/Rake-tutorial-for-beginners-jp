@@ -1,0 +1,18 @@
+sources = FileList["sec*.md"]
+
+task default: %w[docs/はじめてのRake.html docs/style.css]
+
+file "docs/はじめてのRake.html" => %w[はじめてのRake.md docs] do |t|
+  sh "pandoc -s --toc -c style.css -o #{t.name} #{t.source}"
+end
+
+file "はじめてのRake.md" => sources do |t|
+  firstrake = t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"}
+  File.write("はじめてのRake.md", firstrake)
+end
+
+file "docs/style.css" => %w[style.css docs] do |t|
+  cp t.source, t.name
+end
+
+directory "docs"

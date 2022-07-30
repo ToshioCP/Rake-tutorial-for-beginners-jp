@@ -1,0 +1,9 @@
+sources = FileList["*.txt"]
+sources.exclude("~*.txt")
+names = sources.ext(".bak")
+
+task default: names
+
+rule ".bak" => ".txt" do |t|
+  cp t.source, t.name
+end

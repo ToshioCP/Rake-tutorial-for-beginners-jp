@@ -1,0 +1,5 @@
+task :hello, [:person1, :person2] do |t, args|
+  args.with_defaults person1: "Dad", person2: "Mom"
+  print "Hello, #{args.person1}.\n"
+  print "Hello, #{args.person2}.\n"
+end

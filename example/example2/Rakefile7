@@ -1,0 +1,7 @@
+backup_files = %w[a.bak b.bak c.bak]
+
+task default: backup_files
+
+rule /\.bak$/ => '.txt' do |t|
+  cp t.source, t.name
+end

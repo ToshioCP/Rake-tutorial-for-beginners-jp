@@ -1,0 +1,19 @@
+require 'rake/clean'
+
+sources = FileList["sec*.md"]
+
+task default: %w[はじめてのRake.pdf]
+
+CLEAN.include %w[はじめてのRake.tex]
+
+file "はじめてのRake.pdf" => "はじめてのRake.md" do |t|
+  sh "pandoc -s --pdf-engine lualatex -o #{t.name} #{t.source}"
+end
+CLEAN << "はじめてのRake.md"
+
+file "はじめてのRake.md" => sources do |t|
+  firstrake = t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"}
+  File.write("はじめてのRake.md", firstrake)
+end
+
+CLOBBER << "はじめてのRake.pdf"

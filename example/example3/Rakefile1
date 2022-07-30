@@ -1,0 +1,4 @@
+files = FileList["a.txt", "b.txt"]
+p files
+
+task :default

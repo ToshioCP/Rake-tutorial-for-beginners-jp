@@ -1,0 +1,5 @@
+files = FileList["*.txt"]
+files.exclude("~*.txt")
+p files
+
+task :default

@@ -1,0 +1,7 @@
+sources = FileList["src/*.txt"]
+p sources.pathmap("%p")
+p sources.pathmap("%f")
+p sources.pathmap("%n")
+p sources.pathmap("%d")
+
+task :default

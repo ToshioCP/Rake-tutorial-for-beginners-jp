@@ -1,0 +1,5 @@
+desc "あいさつをするタスク"
+task :hello do
+  print "Hello.\n"
+end
+Rake::Task[:hello].add_description "です"
