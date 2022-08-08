@@ -12,6 +12,8 @@
 
 このチュートリアルを通して、様々な開発にRakeを活用できる力をつけましょう。
 
+文中に例として書かれているソースコードは、GitHubのレポジトリ[Rake tutorial for bginners jp](https://github.com/ToshioCP/Rake-tutorial-for-beginners-jp)にありますので、ダウンロードして使ってください。
+
 文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。
 上級とは、ほぼ「クラスを記述できるレベル」を指します。
 上級以外の方はこの部分を飛ばしてください。

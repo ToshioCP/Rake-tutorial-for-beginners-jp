@@ -4,6 +4,7 @@
 
 ---
 documentclass: ltjsarticle
+geometry: margin=2.4cm
 toc: true
 numbersections: true
 secnumdepth: 2

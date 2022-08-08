@@ -102,6 +102,7 @@
 <li>Rakeを使った実用的な例を扱っている</li>
 </ul>
 <p>このチュートリアルを通して、様々な開発にRakeを活用できる力をつけましょう。</p>
+<p>文中に例として書かれているソースコードは、GitHubのレポジトリ<a href="https://github.com/ToshioCP/Rake-tutorial-for-beginners-jp">Rake tutorial for bginners jp</a>にありますので、ダウンロードして使ってください。</p>
 <p>文中に［Ｒ］という記号で始まる段落は、「Ruby上級者向けの解説」です。 上級とは、ほぼ「クラスを記述できるレベル」を指します。 上級以外の方はこの部分を飛ばしてください。</p>
 <h4 id="rakeのインストール">Rakeのインストール</h4>
 <p>RakeはRubyのアプリケーションです。 Rubyのインストールについては<a href="https://www.ruby-lang.org/ja/documentation/installation/#package-management-systems">Rubyの公式ホームページ</a>を参考にしてください。 Rakeは「Rubyの標準添付ライブラリ」なので、インストールされたRubyの中に含まれることが多いですが、もしそうでないときは、</p>
@@ -935,6 +936,7 @@ $</code></pre>
 
 ---
 documentclass: ltjsarticle
+geometry: margin=2.4cm
 toc: true
 numbersections: true
 secnumdepth: 2
@@ -942,6 +944,7 @@ secnumdepth: 2
 <p>%で始まるメタデータは、前のセクションでHTMLを作ったときと同じです。 それぞれ、タイトル、著者、作成日時を表します。 <code>---</code>行で前後を囲まれた部分がYAMLのメタデータです。 ここで設定できる項目にどのようなものがあるかはPandocのマニュアルを見てください。 ここで設定している項目は次の通りです。</p>
 <ul>
 <li>LaTeX文書のドキュメントクラスに「ltjsarticle」を使う</li>
+<li>geometryパッケージを用いてマージンが2.4cmになるようにレイアウトを変更する</li>
 <li>目次を出力する</li>
 <li>セクションに番号をふる（Pandocのデフォルトでは番号が振られません）</li>
 <li>セクションに番号を降るのは大きい見出しから2番めまで。 「ltjsarticle」ドキュメントクラスでは最も大きい見出しが「section」で、2番めが「subsection」です。 これらはMarkdownの「#」と「##」のATX見出しに対応します。</li>
@@ -959,27 +962,39 @@ secnumdepth: 2
 <p>これを<code>ch_head.rb</code>というファイル名で保存し、実行します。 （サンプルファイルは<code>example/example5</code>に入っています）</p>
 <pre><code>$ ruby ch_head.rb</code></pre>
 <p>これで見出しの修正はできました。</p>
+<p><code>sec2.md</code>のフェンスコードブロックの中に長すぎる行があります。 PDFではみ出してしまうので、調整しておきます。</p>
+<pre><code>&gt; $ rake
+&gt; rake aborted!
+&gt; Rake::RuleRecursionOverflowError: Rule Recursion Too Deep: [ ... ...
+&gt;
+&gt; 最後の1行が長いので、分割して3行にする
+&gt;
+&gt; $ rake
+&gt; rake aborted!
+&gt; Rake::RuleRecursionOverflowError: Rule Recursion Too Deep: [~a.txt =&gt; ~a.txt =&gt;
+&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt;
+&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt =&gt; ~a.txt]</code></pre>
 <h4 id="rakefileの作成-1">Rakefileの作成</h4>
 <p>Rakefileは前回のものをPDFに合うように修正するので、比較的簡単に作れます。</p>
-<div class="sourceCode" id="cb76"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
-<span id="cb76-2"><a href="#cb76-2" aria-hidden="true"></a></span>
-<span id="cb76-3"><a href="#cb76-3" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec*.md&quot;</span>]</span>
-<span id="cb76-4"><a href="#cb76-4" aria-hidden="true"></a></span>
-<span id="cb76-5"><a href="#cb76-5" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
-<span id="cb76-6"><a href="#cb76-6" aria-hidden="true"></a></span>
-<span id="cb76-7"><a href="#cb76-7" aria-hidden="true"></a><span class="dt">CLEAN</span>.include <span class="ot">%w[</span><span class="st">はじめてのRake.tex *.aux *.toc *.log *fls *.fdb_latexmk</span><span class="ot">]</span></span>
-<span id="cb76-8"><a href="#cb76-8" aria-hidden="true"></a></span>
-<span id="cb76-9"><a href="#cb76-9" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.pdf&quot;</span> =&gt; <span class="st">&quot;はじめてのRake.md&quot;</span> <span class="kw">do</span> |t|</span>
-<span id="cb76-10"><a href="#cb76-10" aria-hidden="true"></a>  sh <span class="st">&quot;pandoc -s --pdf-engine lualatex -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
-<span id="cb76-11"><a href="#cb76-11" aria-hidden="true"></a><span class="kw">end</span></span>
-<span id="cb76-12"><a href="#cb76-12" aria-hidden="true"></a><span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake.md&quot;</span></span>
-<span id="cb76-13"><a href="#cb76-13" aria-hidden="true"></a></span>
-<span id="cb76-14"><a href="#cb76-14" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
-<span id="cb76-15"><a href="#cb76-15" aria-hidden="true"></a>  firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
-<span id="cb76-16"><a href="#cb76-16" aria-hidden="true"></a>  <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
-<span id="cb76-17"><a href="#cb76-17" aria-hidden="true"></a><span class="kw">end</span></span>
-<span id="cb76-18"><a href="#cb76-18" aria-hidden="true"></a></span>
-<span id="cb76-19"><a href="#cb76-19" aria-hidden="true"></a><span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;はじめてのRake.pdf&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true"></a></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec*.md&quot;</span>]</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true"></a></span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true"></a></span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true"></a><span class="dt">CLEAN</span>.include <span class="ot">%w[</span><span class="st">はじめてのRake.tex</span><span class="ot">]</span></span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true"></a></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.pdf&quot;</span> =&gt; <span class="st">&quot;はじめてのRake.md&quot;</span> <span class="kw">do</span> |t|</span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true"></a>  sh <span class="st">&quot;pandoc -s --pdf-engine lualatex -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true"></a><span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake.md&quot;</span></span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true"></a></span>
+<span id="cb77-14"><a href="#cb77-14" aria-hidden="true"></a>file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
+<span id="cb77-15"><a href="#cb77-15" aria-hidden="true"></a>  firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
+<span id="cb77-16"><a href="#cb77-16" aria-hidden="true"></a>  <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
+<span id="cb77-17"><a href="#cb77-17" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb77-18"><a href="#cb77-18" aria-hidden="true"></a></span>
+<span id="cb77-19"><a href="#cb77-19" aria-hidden="true"></a><span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;はじめてのRake.pdf&quot;</span></span></code></pre></div>
 <p>フォルダ<code>example/example5</code>の「sec1.md」から「sec4.md」は、すでにメタデータや見出しの修正が終わっています。</p>
 <p>それでは、Rakeを実行してみましょう。 （<code>example/example5</code>で実行してください）</p>
 <pre><code>$ rake
@@ -1015,73 +1030,74 @@ end</code></pre>
 </ul>
 <p>まず、メタデータを作ります。</p>
 <p>metadata_html.yml</p>
-<div class="sourceCode" id="cb79"><pre class="sourceCode yml"><code class="sourceCode yaml"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> はじめてのRake</span></span>
-<span id="cb79-2"><a href="#cb79-2" aria-hidden="true"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> ToshioCP</span></span>
-<span id="cb79-3"><a href="#cb79-3" aria-hidden="true"></a><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022/7/29</span></span></code></pre></div>
-<p>metadata_pdf.yml</p>
 <div class="sourceCode" id="cb80"><pre class="sourceCode yml"><code class="sourceCode yaml"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> はじめてのRake</span></span>
 <span id="cb80-2"><a href="#cb80-2" aria-hidden="true"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> ToshioCP</span></span>
-<span id="cb80-3"><a href="#cb80-3" aria-hidden="true"></a><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022/7/29</span></span>
-<span id="cb80-4"><a href="#cb80-4" aria-hidden="true"></a><span class="fu">documentclass</span><span class="kw">:</span><span class="at"> ltjsarticle</span></span>
-<span id="cb80-5"><a href="#cb80-5" aria-hidden="true"></a><span class="fu">toc</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb80-6"><a href="#cb80-6" aria-hidden="true"></a><span class="fu">numbersections</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
-<span id="cb80-7"><a href="#cb80-7" aria-hidden="true"></a><span class="fu">secnumdepth</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span></code></pre></div>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true"></a><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022/7/29</span></span></code></pre></div>
+<p>metadata_pdf.yml</p>
+<div class="sourceCode" id="cb81"><pre class="sourceCode yml"><code class="sourceCode yaml"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true"></a><span class="fu">title</span><span class="kw">:</span><span class="at"> はじめてのRake</span></span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true"></a><span class="fu">author</span><span class="kw">:</span><span class="at"> ToshioCP</span></span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true"></a><span class="fu">date</span><span class="kw">:</span><span class="at"> 2022/7/29</span></span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true"></a><span class="fu">documentclass</span><span class="kw">:</span><span class="at"> ltjsarticle</span></span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true"></a><span class="fu">geometry</span><span class="kw">:</span><span class="at"> margin=2.4cm</span></span>
+<span id="cb81-6"><a href="#cb81-6" aria-hidden="true"></a><span class="fu">toc</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb81-7"><a href="#cb81-7" aria-hidden="true"></a><span class="fu">numbersections</span><span class="kw">:</span><span class="at"> </span><span class="ch">true</span></span>
+<span id="cb81-8"><a href="#cb81-8" aria-hidden="true"></a><span class="fu">secnumdepth</span><span class="kw">:</span><span class="at"> </span><span class="dv">2</span></span></code></pre></div>
 <p>「sec1.md」の最初にあった%で始まるメタデータを消去しておきます。 「sec1.md」などは、見出しが「###」から「#####」になっていることを確認しておいてください。</p>
 <h4 id="rakefile">Rakefile</h4>
 <p>では、Rakefileを書きましょう。</p>
-<div class="sourceCode" id="cb81"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
-<span id="cb81-2"><a href="#cb81-2" aria-hidden="true"></a></span>
-<span id="cb81-3"><a href="#cb81-3" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec1.md&quot;</span>, <span class="st">&quot;sec2.md&quot;</span>, <span class="st">&quot;sec3.md&quot;</span>, <span class="st">&quot;sec4.md&quot;</span>]</span>
-<span id="cb81-4"><a href="#cb81-4" aria-hidden="true"></a>sources_pdf = sources.pathmap(<span class="st">&quot;%{sec,sec_pdf}p&quot;</span>)</span>
-<span id="cb81-5"><a href="#cb81-5" aria-hidden="true"></a></span>
-<span id="cb81-6"><a href="#cb81-6" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">html:build pdf:build</span><span class="ot">]</span></span>
-<span id="cb81-7"><a href="#cb81-7" aria-hidden="true"></a></span>
-<span id="cb81-8"><a href="#cb81-8" aria-hidden="true"></a>namespace <span class="st">&quot;html&quot;</span> <span class="kw">do</span></span>
-<span id="cb81-9"><a href="#cb81-9" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
-<span id="cb81-10"><a href="#cb81-10" aria-hidden="true"></a>  </span>
-<span id="cb81-11"><a href="#cb81-11" aria-hidden="true"></a>  file <span class="st">&quot;docs/はじめてのRake.html&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">はじめてのRake.md docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
-<span id="cb81-12"><a href="#cb81-12" aria-hidden="true"></a>    sh <span class="st">&quot;pandoc -s --toc --metadata-file=metadata_html.yml -c style.css -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
-<span id="cb81-13"><a href="#cb81-13" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-14"><a href="#cb81-14" aria-hidden="true"></a>  <span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake.md&quot;</span></span>
-<span id="cb81-15"><a href="#cb81-15" aria-hidden="true"></a>  </span>
-<span id="cb81-16"><a href="#cb81-16" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
-<span id="cb81-17"><a href="#cb81-17" aria-hidden="true"></a>    firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
-<span id="cb81-18"><a href="#cb81-18" aria-hidden="true"></a>    <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
-<span id="cb81-19"><a href="#cb81-19" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-20"><a href="#cb81-20" aria-hidden="true"></a></span>
-<span id="cb81-21"><a href="#cb81-21" aria-hidden="true"></a>  file <span class="st">&quot;docs/style.css&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">style.css docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
-<span id="cb81-22"><a href="#cb81-22" aria-hidden="true"></a>    cp t.source, t.name</span>
-<span id="cb81-23"><a href="#cb81-23" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-24"><a href="#cb81-24" aria-hidden="true"></a></span>
-<span id="cb81-25"><a href="#cb81-25" aria-hidden="true"></a>  directory <span class="st">&quot;docs&quot;</span></span>
-<span id="cb81-26"><a href="#cb81-26" aria-hidden="true"></a>  <span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;docs&quot;</span></span>
-<span id="cb81-27"><a href="#cb81-27" aria-hidden="true"></a><span class="kw">end</span></span>
-<span id="cb81-28"><a href="#cb81-28" aria-hidden="true"></a></span>
-<span id="cb81-29"><a href="#cb81-29" aria-hidden="true"></a>namespace <span class="st">&quot;pdf&quot;</span> <span class="kw">do</span></span>
-<span id="cb81-30"><a href="#cb81-30" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
-<span id="cb81-31"><a href="#cb81-31" aria-hidden="true"></a></span>
-<span id="cb81-32"><a href="#cb81-32" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake.pdf&quot;</span> =&gt; <span class="st">&quot;はじめてのRake_pdf.md&quot;</span> <span class="kw">do</span> |t|</span>
-<span id="cb81-33"><a href="#cb81-33" aria-hidden="true"></a>    sh <span class="st">&quot;pandoc -s --pdf-engine lualatex --metadata-file=metadata_pdf.yml -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
-<span id="cb81-34"><a href="#cb81-34" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-35"><a href="#cb81-35" aria-hidden="true"></a>  <span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake_pdf.md&quot;</span></span>
-<span id="cb81-36"><a href="#cb81-36" aria-hidden="true"></a>  </span>
-<span id="cb81-37"><a href="#cb81-37" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake_pdf.md&quot;</span> =&gt; sources_pdf <span class="kw">do</span> |t|</span>
-<span id="cb81-38"><a href="#cb81-38" aria-hidden="true"></a>    firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
-<span id="cb81-39"><a href="#cb81-39" aria-hidden="true"></a>    <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake_pdf.md&quot;</span>, firstrake)</span>
-<span id="cb81-40"><a href="#cb81-40" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-41"><a href="#cb81-41" aria-hidden="true"></a>  <span class="dt">CLEAN</span>.include sources_pdf</span>
-<span id="cb81-42"><a href="#cb81-42" aria-hidden="true"></a>    </span>
-<span id="cb81-43"><a href="#cb81-43" aria-hidden="true"></a>  sources_pdf.each <span class="kw">do</span> |dst|</span>
-<span id="cb81-44"><a href="#cb81-44" aria-hidden="true"></a>    src = dst.sub(<span class="ot">/_pdf/</span>,<span class="st">&quot;&quot;</span>)</span>
-<span id="cb81-45"><a href="#cb81-45" aria-hidden="true"></a>    file dst =&gt; src <span class="kw">do</span></span>
-<span id="cb81-46"><a href="#cb81-46" aria-hidden="true"></a>      s = <span class="dt">File</span>.read(src)</span>
-<span id="cb81-47"><a href="#cb81-47" aria-hidden="true"></a>      s = s.gsub(<span class="ot">/^###/</span>,<span class="st">&quot;#&quot;</span>).gsub(<span class="ot">/^####/</span>,<span class="st">&quot;##&quot;</span>).gsub(<span class="ot">/^#####/</span>,<span class="st">&quot;###&quot;</span>)</span>
-<span id="cb81-48"><a href="#cb81-48" aria-hidden="true"></a>      <span class="dt">File</span>.write(dst, s)</span>
-<span id="cb81-49"><a href="#cb81-49" aria-hidden="true"></a>    <span class="kw">end</span></span>
-<span id="cb81-50"><a href="#cb81-50" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb81-51"><a href="#cb81-51" aria-hidden="true"></a></span>
-<span id="cb81-52"><a href="#cb81-52" aria-hidden="true"></a>  <span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;はじめてのRake.pdf&quot;</span></span>
-<span id="cb81-53"><a href="#cb81-53" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb82"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb82-1"><a href="#cb82-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
+<span id="cb82-2"><a href="#cb82-2" aria-hidden="true"></a></span>
+<span id="cb82-3"><a href="#cb82-3" aria-hidden="true"></a>sources = <span class="dt">FileList</span>[<span class="st">&quot;sec1.md&quot;</span>, <span class="st">&quot;sec2.md&quot;</span>, <span class="st">&quot;sec3.md&quot;</span>, <span class="st">&quot;sec4.md&quot;</span>]</span>
+<span id="cb82-4"><a href="#cb82-4" aria-hidden="true"></a>sources_pdf = sources.pathmap(<span class="st">&quot;%{sec,sec_pdf}p&quot;</span>)</span>
+<span id="cb82-5"><a href="#cb82-5" aria-hidden="true"></a></span>
+<span id="cb82-6"><a href="#cb82-6" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">html:build pdf:build</span><span class="ot">]</span></span>
+<span id="cb82-7"><a href="#cb82-7" aria-hidden="true"></a></span>
+<span id="cb82-8"><a href="#cb82-8" aria-hidden="true"></a>namespace <span class="st">&quot;html&quot;</span> <span class="kw">do</span></span>
+<span id="cb82-9"><a href="#cb82-9" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
+<span id="cb82-10"><a href="#cb82-10" aria-hidden="true"></a>  </span>
+<span id="cb82-11"><a href="#cb82-11" aria-hidden="true"></a>  file <span class="st">&quot;docs/はじめてのRake.html&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">はじめてのRake.md docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb82-12"><a href="#cb82-12" aria-hidden="true"></a>    sh <span class="st">&quot;pandoc -s --toc --metadata-file=metadata_html.yml -c style.css -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb82-13"><a href="#cb82-13" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-14"><a href="#cb82-14" aria-hidden="true"></a>  <span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake.md&quot;</span></span>
+<span id="cb82-15"><a href="#cb82-15" aria-hidden="true"></a>  </span>
+<span id="cb82-16"><a href="#cb82-16" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake.md&quot;</span> =&gt; sources <span class="kw">do</span> |t|</span>
+<span id="cb82-17"><a href="#cb82-17" aria-hidden="true"></a>    firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
+<span id="cb82-18"><a href="#cb82-18" aria-hidden="true"></a>    <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake.md&quot;</span>, firstrake)</span>
+<span id="cb82-19"><a href="#cb82-19" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-20"><a href="#cb82-20" aria-hidden="true"></a></span>
+<span id="cb82-21"><a href="#cb82-21" aria-hidden="true"></a>  file <span class="st">&quot;docs/style.css&quot;</span> =&gt;<span class="ot"> %w[</span><span class="st">style.css docs</span><span class="ot">]</span> <span class="kw">do</span> |t|</span>
+<span id="cb82-22"><a href="#cb82-22" aria-hidden="true"></a>    cp t.source, t.name</span>
+<span id="cb82-23"><a href="#cb82-23" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-24"><a href="#cb82-24" aria-hidden="true"></a></span>
+<span id="cb82-25"><a href="#cb82-25" aria-hidden="true"></a>  directory <span class="st">&quot;docs&quot;</span></span>
+<span id="cb82-26"><a href="#cb82-26" aria-hidden="true"></a>  <span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;docs&quot;</span></span>
+<span id="cb82-27"><a href="#cb82-27" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb82-28"><a href="#cb82-28" aria-hidden="true"></a></span>
+<span id="cb82-29"><a href="#cb82-29" aria-hidden="true"></a>namespace <span class="st">&quot;pdf&quot;</span> <span class="kw">do</span></span>
+<span id="cb82-30"><a href="#cb82-30" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
+<span id="cb82-31"><a href="#cb82-31" aria-hidden="true"></a></span>
+<span id="cb82-32"><a href="#cb82-32" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake.pdf&quot;</span> =&gt; <span class="st">&quot;はじめてのRake_pdf.md&quot;</span> <span class="kw">do</span> |t|</span>
+<span id="cb82-33"><a href="#cb82-33" aria-hidden="true"></a>    sh <span class="st">&quot;pandoc -s --pdf-engine lualatex --metadata-file=metadata_pdf.yml -o </span><span class="ot">#{</span>t.name<span class="ot">}</span><span class="st"> </span><span class="ot">#{</span>t.source<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb82-34"><a href="#cb82-34" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-35"><a href="#cb82-35" aria-hidden="true"></a>  <span class="dt">CLEAN</span> &lt;&lt; <span class="st">&quot;はじめてのRake_pdf.md&quot;</span></span>
+<span id="cb82-36"><a href="#cb82-36" aria-hidden="true"></a>  </span>
+<span id="cb82-37"><a href="#cb82-37" aria-hidden="true"></a>  file <span class="st">&quot;はじめてのRake_pdf.md&quot;</span> =&gt; sources_pdf <span class="kw">do</span> |t|</span>
+<span id="cb82-38"><a href="#cb82-38" aria-hidden="true"></a>    firstrake = t.sources.inject(<span class="st">&quot;&quot;</span>) {|s1, s2| s1 &lt;&lt; <span class="dt">File</span>.read(s2) + <span class="st">&quot;\n&quot;</span>}</span>
+<span id="cb82-39"><a href="#cb82-39" aria-hidden="true"></a>    <span class="dt">File</span>.write(<span class="st">&quot;はじめてのRake_pdf.md&quot;</span>, firstrake)</span>
+<span id="cb82-40"><a href="#cb82-40" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-41"><a href="#cb82-41" aria-hidden="true"></a>  <span class="dt">CLEAN</span>.include sources_pdf</span>
+<span id="cb82-42"><a href="#cb82-42" aria-hidden="true"></a>    </span>
+<span id="cb82-43"><a href="#cb82-43" aria-hidden="true"></a>  sources_pdf.each <span class="kw">do</span> |dst|</span>
+<span id="cb82-44"><a href="#cb82-44" aria-hidden="true"></a>    src = dst.sub(<span class="ot">/_pdf/</span>,<span class="st">&quot;&quot;</span>)</span>
+<span id="cb82-45"><a href="#cb82-45" aria-hidden="true"></a>    file dst =&gt; src <span class="kw">do</span></span>
+<span id="cb82-46"><a href="#cb82-46" aria-hidden="true"></a>      s = <span class="dt">File</span>.read(src)</span>
+<span id="cb82-47"><a href="#cb82-47" aria-hidden="true"></a>      s = s.gsub(<span class="ot">/^###/</span>,<span class="st">&quot;#&quot;</span>).gsub(<span class="ot">/^####/</span>,<span class="st">&quot;##&quot;</span>).gsub(<span class="ot">/^#####/</span>,<span class="st">&quot;###&quot;</span>)</span>
+<span id="cb82-48"><a href="#cb82-48" aria-hidden="true"></a>      <span class="dt">File</span>.write(dst, s)</span>
+<span id="cb82-49"><a href="#cb82-49" aria-hidden="true"></a>    <span class="kw">end</span></span>
+<span id="cb82-50"><a href="#cb82-50" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb82-51"><a href="#cb82-51" aria-hidden="true"></a></span>
+<span id="cb82-52"><a href="#cb82-52" aria-hidden="true"></a>  <span class="dt">CLOBBER</span> &lt;&lt; <span class="st">&quot;はじめてのRake.pdf&quot;</span></span>
+<span id="cb82-53"><a href="#cb82-53" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>ポイントを書きます</p>
 <ul>
 <li><code>sources</code>の定義を変えた。 PDFの作成で「sec_pdf1.md」のような中間ファイルが作らる。 <code>sources=FileList["sec*.md"]</code>だと、中間ファイルも拾ってしまうので、それを防ぐためにファイル名を具体的に書いた。</li>
@@ -1138,10 +1154,10 @@ $ rake post:new
 <p>このタスク<code>a</code>はパラメータに<code>:param1</code>と<code>:param2</code>を持ちます。 パラメータの名前には通常シンボルを用いますが、文字列も可能です。 また、パラメータがひとつならば配列にしなくても構いません。</p>
 <p>タスク<code>a</code>ではアクションがないので、引数の効果はありません。 引数の効果はアクションの中で発揮されます。</p>
 <p>アクション（ブロック）には2番めのパラメータとして引数のインスタンス（TaskArgumentsクラスのインスタンス）が渡されます。</p>
-<div class="sourceCode" id="cb87"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb87-4"><a href="#cb87-4" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb88"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>ブロック・パラメータは</p>
 <ul>
 <li>t =&gt; タスク「hello」のインスタンス</li>
@@ -1166,11 +1182,11 @@ Hello, Kelly.</code></pre>
 <p>［Ｒ］上にあげた2番めのパラメータ名をメソッドとして使う方法は、実はメソッドとして定義されたものではありません。 Rakeは<code>method_missing</code>メソッド（BasicObjectのメソッド）を使い、メソッド名が定義されていなければパラメータ名の値を返すようにしています。 それであたかもパラメータ名のメソッドが実行されたように見えるのです。</p>
 </blockquote>
 <p>パラメータのデフォルト値を設定することも出来ます。 <code>with_defaults</code>メソッドにハッシュをつけて使います。</p>
-<div class="sourceCode" id="cb89"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
-<span id="cb89-2"><a href="#cb89-2" aria-hidden="true"></a>  args.with_defaults <span class="st">person1: &quot;Dad&quot;</span>, <span class="st">person2: &quot;Mom&quot;</span></span>
-<span id="cb89-3"><a href="#cb89-3" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb89-4"><a href="#cb89-4" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb89-5"><a href="#cb89-5" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb90"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true"></a>  args.with_defaults <span class="st">person1: &quot;Dad&quot;</span>, <span class="st">person2: &quot;Mom&quot;</span></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>デフォルト値が<code>person1</code>に対して<code>Dad</code>、<code>person2</code>に対して<code>Mom</code>になりました。 実行してみます。 （<code>example/example7</code>でオプション<code>-f Rakefile2</code>をつけて実行してください）</p>
 <pre><code>$ rake hello[James,Kelly,David]
 Hello, James.
@@ -1186,15 +1202,15 @@ Hello, Mom.</code></pre>
 ・・・・
 end</code></pre>
 <p>この例では<code>prerequisite1</code>と<code>prerequisite2</code>が事前タスクです。 事前タスクには引数が受け継がれますので、その中でパラメータを設定しておけば引数を使うことができます。</p>
-<div class="sourceCode" id="cb92"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true"></a>task <span class="st">:how</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] =&gt; <span class="st">:hello</span> <span class="kw">do</span> |t, args|</span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true"></a>  print <span class="st">&quot;How are you, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">?\n&quot;</span></span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true"></a>  print <span class="st">&quot;How are you, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">?\n&quot;</span></span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true"></a><span class="kw">end</span></span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true"></a></span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
-<span id="cb92-7"><a href="#cb92-7" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb92-8"><a href="#cb92-8" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
-<span id="cb92-9"><a href="#cb92-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb93"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true"></a>task <span class="st">:how</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] =&gt; <span class="st">:hello</span> <span class="kw">do</span> |t, args|</span>
+<span id="cb93-2"><a href="#cb93-2" aria-hidden="true"></a>  print <span class="st">&quot;How are you, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">?\n&quot;</span></span>
+<span id="cb93-3"><a href="#cb93-3" aria-hidden="true"></a>  print <span class="st">&quot;How are you, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">?\n&quot;</span></span>
+<span id="cb93-4"><a href="#cb93-4" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb93-5"><a href="#cb93-5" aria-hidden="true"></a></span>
+<span id="cb93-6"><a href="#cb93-6" aria-hidden="true"></a>task <span class="st">:hello</span>, [<span class="st">:person1</span>, <span class="st">:person2</span>] <span class="kw">do</span> |t, args|</span>
+<span id="cb93-7"><a href="#cb93-7" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person1<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb93-8"><a href="#cb93-8" aria-hidden="true"></a>  print <span class="st">&quot;Hello, </span><span class="ot">#{</span>args.person2<span class="ot">}</span><span class="st">.\n&quot;</span></span>
+<span id="cb93-9"><a href="#cb93-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>タスクhowに与えられる引数が事前タスクhelloにも与えられます。 （<code>example/example7</code>では<code>-f Rakefile3</code>をつけて実行してください）</p>
 <pre><code>$ rake -f Rakefile3 how[James,Kelly,David]
 Hello, James.
@@ -1218,18 +1234,18 @@ rake hello
 
 $</code></pre>
 <p>表示されるのはディスクリプションがあるタスクだけです。 ディスクリプションは、ユーザがコマンドラインから呼び出す可能性のあるタスクにのみ付けるべきです。 例えば、前セクションのHTMLやPDFを作成するRakefileでは、</p>
-<div class="sourceCode" id="cb96"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true"></a>・・・・・</span>
-<span id="cb96-2"><a href="#cb96-2" aria-hidden="true"></a>desc <span class="st">&quot;HTMLとPDFの両方のファイルを作成します&quot;</span></span>
-<span id="cb96-3"><a href="#cb96-3" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">html:build pdf:build</span><span class="ot">]</span></span>
-<span id="cb96-4"><a href="#cb96-4" aria-hidden="true"></a>・・・・・</span>
-<span id="cb96-5"><a href="#cb96-5" aria-hidden="true"></a>namespace <span class="st">&quot;html&quot;</span> <span class="kw">do</span></span>
-<span id="cb96-6"><a href="#cb96-6" aria-hidden="true"></a>  desc <span class="st">&quot;HTMLのファイルを作成します&quot;</span></span>
-<span id="cb96-7"><a href="#cb96-7" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
-<span id="cb96-8"><a href="#cb96-8" aria-hidden="true"></a>・・・・・</span>
-<span id="cb96-9"><a href="#cb96-9" aria-hidden="true"></a>namespace <span class="st">&quot;pdf&quot;</span> <span class="kw">do</span></span>
-<span id="cb96-10"><a href="#cb96-10" aria-hidden="true"></a>  desc <span class="st">&quot;PDFのファイルを作成します&quot;</span></span>
-<span id="cb96-11"><a href="#cb96-11" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
-<span id="cb96-12"><a href="#cb96-12" aria-hidden="true"></a>・・・・・</span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true"></a>・・・・・</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true"></a>desc <span class="st">&quot;HTMLとPDFの両方のファイルを作成します&quot;</span></span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true"></a>task <span class="st">default: </span><span class="ot">%w[</span><span class="st">html:build pdf:build</span><span class="ot">]</span></span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true"></a>・・・・・</span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true"></a>namespace <span class="st">&quot;html&quot;</span> <span class="kw">do</span></span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true"></a>  desc <span class="st">&quot;HTMLのファイルを作成します&quot;</span></span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">docs/はじめてのRake.html docs/style.css</span><span class="ot">]</span></span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true"></a>・・・・・</span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true"></a>namespace <span class="st">&quot;pdf&quot;</span> <span class="kw">do</span></span>
+<span id="cb97-10"><a href="#cb97-10" aria-hidden="true"></a>  desc <span class="st">&quot;PDFのファイルを作成します&quot;</span></span>
+<span id="cb97-11"><a href="#cb97-11" aria-hidden="true"></a>  task <span class="st">build: </span><span class="ot">%w[</span><span class="st">はじめてのRake.pdf</span><span class="ot">]</span></span>
+<span id="cb97-12"><a href="#cb97-12" aria-hidden="true"></a>・・・・・</span></code></pre></div>
 <p>とするとコマンドラインからタスクの説明を見ることができます。 （<code>example/example6</code>で<code>-f Rakefile1</code>をつけて実行してください）</p>
 <pre><code>$ rake -T
 rake clean       # Remove any temporary products
@@ -1283,29 +1299,29 @@ rake pdf:build   # PDFのファイルを作成します</code></pre>
 <p>当初の予想では、ある程度時間がかかると思っていたのですが、実行してみると一瞬で終わってしまいました。 マルチタスクのありがたさを実感するには、時間がかかるプログラムの方が良いのですが、更にもうひとつプログラムを書くのも面倒なので、これで説明します。 申し訳ありません。</p>
 <p>さて、2つのRakefileを用意します。 <code>Rakefile1</code>と<code>Rakefile2</code>です。</p>
 <p>Rakefile1</p>
-<div class="sourceCode" id="cb99"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb99-1"><a href="#cb99-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
-<span id="cb99-2"><a href="#cb99-2" aria-hidden="true"></a></span>
-<span id="cb99-3"><a href="#cb99-3" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;../../sec*.md&quot;</span>]</span>
-<span id="cb99-4"><a href="#cb99-4" aria-hidden="true"></a></span>
-<span id="cb99-5"><a href="#cb99-5" aria-hidden="true"></a>task <span class="st">default: </span>files</span>
-<span id="cb99-6"><a href="#cb99-6" aria-hidden="true"></a></span>
-<span id="cb99-7"><a href="#cb99-7" aria-hidden="true"></a>files.each <span class="kw">do</span> |f|</span>
-<span id="cb99-8"><a href="#cb99-8" aria-hidden="true"></a>  task f <span class="kw">do</span></span>
-<span id="cb99-9"><a href="#cb99-9" aria-hidden="true"></a>    sh <span class="st">&quot;ruby fre.rb </span><span class="ot">#{</span>f<span class="ot">}</span><span class="st"> &gt; </span><span class="ot">#{</span>f.pathmap(<span class="st">&#39;%f&#39;</span>).ext(<span class="st">&#39;txt&#39;</span>)<span class="ot">}</span><span class="st">&quot;</span></span>
-<span id="cb99-10"><a href="#cb99-10" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb99-11"><a href="#cb99-11" aria-hidden="true"></a><span class="kw">end</span></span>
-<span id="cb99-12"><a href="#cb99-12" aria-hidden="true"></a></span>
-<span id="cb99-13"><a href="#cb99-13" aria-hidden="true"></a><span class="dt">CLEAN</span>.include files.pathmap(<span class="st">&#39;%f&#39;</span>).ext(<span class="st">&#39;txt&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb100"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true"></a>require <span class="st">&#39;rake/clean&#39;</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true"></a></span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true"></a>files = <span class="dt">FileList</span>[<span class="st">&quot;../../sec*.md&quot;</span>]</span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true"></a></span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true"></a>task <span class="st">default: </span>files</span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true"></a></span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true"></a>files.each <span class="kw">do</span> |f|</span>
+<span id="cb100-8"><a href="#cb100-8" aria-hidden="true"></a>  task f <span class="kw">do</span></span>
+<span id="cb100-9"><a href="#cb100-9" aria-hidden="true"></a>    sh <span class="st">&quot;ruby fre.rb </span><span class="ot">#{</span>f<span class="ot">}</span><span class="st"> &gt; </span><span class="ot">#{</span>f.pathmap(<span class="st">&#39;%f&#39;</span>).ext(<span class="st">&#39;txt&#39;</span>)<span class="ot">}</span><span class="st">&quot;</span></span>
+<span id="cb100-10"><a href="#cb100-10" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb100-11"><a href="#cb100-11" aria-hidden="true"></a><span class="kw">end</span></span>
+<span id="cb100-12"><a href="#cb100-12" aria-hidden="true"></a></span>
+<span id="cb100-13"><a href="#cb100-13" aria-hidden="true"></a><span class="dt">CLEAN</span>.include files.pathmap(<span class="st">&#39;%f&#39;</span>).ext(<span class="st">&#39;txt&#39;</span>)</span></code></pre></div>
 <p>この<code>Rakefile1</code>は「sec1.md」から「sec7.md」までのファイルの文字出現頻度を調べ、その結果をファイルに書き出します。</p>
 <p><code>Rakefile2</code>もほぼ同様で、異なるのは出力ファイル名を違うものにしたことと、5行目の<code>task</code>メソッドを<code>multitask</code>メソッドをに代えたことです。</p>
-<div class="sourceCode" id="cb100"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true"></a>multitask <span class="st">default: </span>files</span></code></pre></div>
+<div class="sourceCode" id="cb101"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true"></a>multitask <span class="st">default: </span>files</span></code></pre></div>
 <p><code>multitask</code>メソッドではタスクを別々のスレッドで並行処理をしますので、速度上の効果が期待できます。 それを調べるためにRubyのBenchmarkライブラリを使って時間計測をしました。 プログラム<code>bm.rb</code>は次の通りです。</p>
-<div class="sourceCode" id="cb101"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true"></a>require <span class="st">&#39;benchmark&#39;</span></span>
-<span id="cb101-2"><a href="#cb101-2" aria-hidden="true"></a></span>
-<span id="cb101-3"><a href="#cb101-3" aria-hidden="true"></a><span class="dt">Benchmark</span>.bm <span class="kw">do</span> |x|</span>
-<span id="cb101-4"><a href="#cb101-4" aria-hidden="true"></a>  x.report {system <span class="st">&quot;rake -f Rakefile1 -q&quot;</span>}</span>
-<span id="cb101-5"><a href="#cb101-5" aria-hidden="true"></a>  x.report {system <span class="st">&quot;rake -f Rakefile2 -q&quot;</span>}</span>
-<span id="cb101-6"><a href="#cb101-6" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb102-1"><a href="#cb102-1" aria-hidden="true"></a>require <span class="st">&#39;benchmark&#39;</span></span>
+<span id="cb102-2"><a href="#cb102-2" aria-hidden="true"></a></span>
+<span id="cb102-3"><a href="#cb102-3" aria-hidden="true"></a><span class="dt">Benchmark</span>.bm <span class="kw">do</span> |x|</span>
+<span id="cb102-4"><a href="#cb102-4" aria-hidden="true"></a>  x.report {system <span class="st">&quot;rake -f Rakefile1 -q&quot;</span>}</span>
+<span id="cb102-5"><a href="#cb102-5" aria-hidden="true"></a>  x.report {system <span class="st">&quot;rake -f Rakefile2 -q&quot;</span>}</span>
+<span id="cb102-6"><a href="#cb102-6" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>ベンチマークライブラリの使い方は<a href="https://docs.ruby-lang.org/ja/3.0/library/benchmark.html">Rubyのドキュメント</a>を参考にしてください。 実行してみます。</p>
 <pre><code>$ ruby bm.rb
        user     system      total        real
@@ -1317,15 +1333,15 @@ rake pdf:build   # PDFのファイルを作成します</code></pre>
 <p>最後のトピックはテストタスクです。 現在のRubyの標準テストライブラリはminitestです。 minitestの情報はその<a href="https://www.rubydoc.info/gems/minitest">ホームページ</a>にあります。 何回か経験すればテストのコツのようなものは分かると思います。</p>
 <p>通常、テストのプログラムは<code>test</code>ディレクトリに集めておくことが多いです。 そのディレクトリにRakefileを置き、テストをマルチタスクで高速に行うことができます。 例が<a href="https://docs.ruby-lang.org/ja/3.1/class/Rake=3a=3aTestTask.html">Rubyのホームページ</a>にありますので、参考にしてください。</p>
 <p>ここで実例を作るのはかなり大きな作業になりますので、ここではRakefileとその解説のみにとどめます。</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true"></a>require <span class="st">&quot;rake/testtask&quot;</span></span>
-<span id="cb103-2"><a href="#cb103-2" aria-hidden="true"></a></span>
-<span id="cb103-3"><a href="#cb103-3" aria-hidden="true"></a><span class="dt">FileList</span>[<span class="st">&#39;test*.rb&#39;</span>].each <span class="kw">do</span> |file|</span>
-<span id="cb103-4"><a href="#cb103-4" aria-hidden="true"></a>  <span class="dt">Rake</span>::<span class="dt">TestTask</span>.new <span class="kw">do</span> |t|</span>
-<span id="cb103-5"><a href="#cb103-5" aria-hidden="true"></a>    t.libs &lt;&lt; <span class="st">&quot;test&quot;</span></span>
-<span id="cb103-6"><a href="#cb103-6" aria-hidden="true"></a>    t.test_files = [file]</span>
-<span id="cb103-7"><a href="#cb103-7" aria-hidden="true"></a>    t.verbose = <span class="dv">true</span></span>
-<span id="cb103-8"><a href="#cb103-8" aria-hidden="true"></a>  <span class="kw">end</span></span>
-<span id="cb103-9"><a href="#cb103-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode ruby"><code class="sourceCode ruby"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true"></a>require <span class="st">&quot;rake/testtask&quot;</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true"></a></span>
+<span id="cb104-3"><a href="#cb104-3" aria-hidden="true"></a><span class="dt">FileList</span>[<span class="st">&#39;test*.rb&#39;</span>].each <span class="kw">do</span> |file|</span>
+<span id="cb104-4"><a href="#cb104-4" aria-hidden="true"></a>  <span class="dt">Rake</span>::<span class="dt">TestTask</span>.new <span class="kw">do</span> |t|</span>
+<span id="cb104-5"><a href="#cb104-5" aria-hidden="true"></a>    t.libs &lt;&lt; <span class="st">&quot;test&quot;</span></span>
+<span id="cb104-6"><a href="#cb104-6" aria-hidden="true"></a>    t.test_files = [file]</span>
+<span id="cb104-7"><a href="#cb104-7" aria-hidden="true"></a>    t.verbose = <span class="dv">true</span></span>
+<span id="cb104-8"><a href="#cb104-8" aria-hidden="true"></a>  <span class="kw">end</span></span>
+<span id="cb104-9"><a href="#cb104-9" aria-hidden="true"></a><span class="kw">end</span></span></code></pre></div>
 <p>この例では、テスト用のRubyファイルが「test」から始まるファイル名（通常は複数個のファイル）とします。</p>
 <ul>
 <li><code>testtask</code>をrequireすることが必要です</li>

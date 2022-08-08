@@ -36,6 +36,7 @@ YAMLについての詳細は、[ウィキペディア](https://ja.wikipedia.org/
 
 ---
 documentclass: ltjsarticle
+geometry: margin=2.4cm
 toc: true
 numbersections: true
 secnumdepth: 2
@@ -49,6 +50,7 @@ secnumdepth: 2
 ここで設定している項目は次の通りです。
 
 - LaTeX文書のドキュメントクラスに「ltjsarticle」を使う
+- geometryパッケージを用いてマージンが2.4cmになるようにレイアウトを変更する
 - 目次を出力する
 - セクションに番号をふる（Pandocのデフォルトでは番号が振られません）
 - セクションに番号を降るのは大きい見出しから2番めまで。
@@ -80,6 +82,23 @@ $ ruby ch_head.rb
 
 これで見出しの修正はできました。
 
+`sec2.md`のフェンスコードブロックの中に長すぎる行があります。
+PDFではみ出してしまうので、調整しておきます。
+
+```
+> $ rake
+> rake aborted!
+> Rake::RuleRecursionOverflowError: Rule Recursion Too Deep: [ ... ...
+>
+> 最後の1行が長いので、分割して3行にする
+>
+> $ rake
+> rake aborted!
+> Rake::RuleRecursionOverflowError: Rule Recursion Too Deep: [~a.txt => ~a.txt =>
+> ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt =>
+> ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt => ~a.txt]
+```
+
 #### Rakefileの作成
 
 Rakefileは前回のものをPDFに合うように修正するので、比較的簡単に作れます。
@@ -91,7 +110,7 @@ sources = FileList["sec*.md"]
 
 task default: %w[はじめてのRake.pdf]
 
-CLEAN.include %w[はじめてのRake.tex *.aux *.toc *.log *fls *.fdb_latexmk]
+CLEAN.include %w[はじめてのRake.tex]
 
 file "はじめてのRake.pdf" => "はじめてのRake.md" do |t|
   sh "pandoc -s --pdf-engine lualatex -o #{t.name} #{t.source}"
@@ -189,6 +208,7 @@ title: はじめてのRake
 author: ToshioCP
 date: 2022/7/29
 documentclass: ltjsarticle
+geometry: margin=2.4cm
 toc: true
 numbersections: true
 secnumdepth: 2
