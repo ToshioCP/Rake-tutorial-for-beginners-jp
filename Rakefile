@@ -10,8 +10,7 @@ end
 CLEAN << "はじめてのRake.md"
 
 file "はじめてのRake.md" => sources do |t|
-  firstrake = t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"}
-  File.write("はじめてのRake.md", firstrake)
+  File.write(t.name, t.sources.inject("") {|s1, s2| s1 << File.read(s2) + "\n"})
 end
 
 file "docs/style.css" => %w[style.css docs] do |t|
