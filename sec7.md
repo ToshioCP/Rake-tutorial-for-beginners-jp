@@ -113,28 +113,23 @@ minitestの情報はその[ホームページ](https://www.rubydoc.info/gems/min
 ```ruby
 require "rake/testtask"
 
-FileList['test*.rb'].each do |file|
-  Rake::TestTask.new do |t|
-    t.libs << "test"
-    t.test_files = [file]
-    t.verbose = true
-  end
+Rake::TestTask.new do |t|
+  t.libs << "test"
+  t.test_files = FileList['test/test*.rb']
+  t.verbose = true
 end
 ```
 
 この例では、テスト用のRubyファイルが「test」から始まるファイル名（通常は複数個のファイル）とします。
 
 - `testtask`をrequireすることが必要です
-- 3行目でテストファイルのファイルリストを作り、eachメソッドでそのひとつひとつに対してブロックでタスクを作ります
 - `Rake::TestTask.new`でテストタスクを生成します。
 一般のタスクにはtaskメソッドがありますが、テストタスクはnewメソッドでインスタンスを作ります。
 - ブロックの引数`t`は生成されたテストタスクです。
 - `t.libs`はライブラリのロードパスで、`test`ディレクトリを追加します
 - `test_files`メソッドで明示的にテストファイルを示します。
-ひとつのテストタスクにひとつのテストプログラムを入れていますが、複数のファイルを入れることも可能です。
-その場合、コンフリクトが起こらないようにしてください。
+複数のファイルに含まれるテストのあいだにコンフリクトが起こらないようにしてください。
 テストプログラムがファイルの読み書きをする場合は特に注意が必要です。
-場合によりますが、このプログラムのように異なるプログラムを異なるテストタスクに登録することで問題を避けることもできます。
 - `t.verbose=true`にすると、テストの実行結果の詳細を表示します。
 
 コマンドラインから、testタスクを実行します。
